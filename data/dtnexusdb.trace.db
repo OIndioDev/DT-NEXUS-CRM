@@ -1,0 +1,52 @@
+2026-09-13 09:11:51.725149-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT @[*]@character_set_database, @@sql_mode"; expected "identifier"; SQL statement:
+SELECT @@character_set_database, @@sql_mode [42001-224]
+2026-09-13 09:11:53.144491-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table contacts (\000d\000a        id bigint not null auto_increment,\000d\000a        cargo_empresa varchar(255),\000d\000a        company varchar(255),\000d\000a        name varchar(255),\000d\000a        phone varchar(255),\000d\000a        status_column varchar(255),\000d\000a        contact_value float(53),\000d\000a        primary key (id)\000d\000a    ) engine[*]=InnoDB"; expected "identifier"; SQL statement:
+
+    create table contacts (
+        id bigint not null auto_increment,
+        cargo_empresa varchar(255),
+        company varchar(255),
+        name varchar(255),
+        phone varchar(255),
+        status_column varchar(255),
+        contact_value float(53),
+        primary key (id)
+    ) engine=InnoDB [42001-224]
+2026-09-13 09:11:53.153491-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table interactions (\000d\000a        id bigint not null auto_increment,\000d\000a        content TEXT not null,\000d\000a        created_at datetime(6),\000d\000a        lead_id bigint not null,\000d\000a        tenant_id varchar(255) not null,\000d\000a        type varchar(255) not null,\000d\000a        primary key (id)\000d\000a    ) engine[*]=InnoDB"; expected "identifier"; SQL statement:
+
+    create table interactions (
+        id bigint not null auto_increment,
+        content TEXT not null,
+        created_at datetime(6),
+        lead_id bigint not null,
+        tenant_id varchar(255) not null,
+        type varchar(255) not null,
+        primary key (id)
+    ) engine=InnoDB [42001-224]
+2026-09-13 09:11:53.159491-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table leads (\000d\000a        id bigint not null auto_increment,\000d\000a        ai_summary TEXT,\000d\000a        company_name varchar(255),\000d\000a        created_at datetime(6),\000d\000a        deal_value float(53),\000d\000a        email varchar(255) not null,\000d\000a        name varchar(255) not null,\000d\000a        next_best_action TEXT,\000d\000a        phone varchar(255),\000d\000a        sentiment_score varchar(255),\000d\000a        status_column varchar(255) not null,\000d\000a        tenant_id varchar(255) not null,\000d\000a        primary key (id)\000d\000a    ) engine[*]=InnoDB"; expected "identifier"; SQL statement:
+
+    create table leads (
+        id bigint not null auto_increment,
+        ai_summary TEXT,
+        company_name varchar(255),
+        created_at datetime(6),
+        deal_value float(53),
+        email varchar(255) not null,
+        name varchar(255) not null,
+        next_best_action TEXT,
+        phone varchar(255),
+        sentiment_score varchar(255),
+        status_column varchar(255) not null,
+        tenant_id varchar(255) not null,
+        primary key (id)
+    ) engine=InnoDB [42001-224]
+2026-09-13 22:23:50.112854-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CONTACT" not found; SQL statement:
+SELECT * FROM contact [42102-224]
+2026-09-13 22:24:35.653420-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CONTACT" not found; SQL statement:
+SELECT * FROM contact [42102-224]

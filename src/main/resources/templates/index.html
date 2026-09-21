@@ -1,0 +1,2400 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <title>DT NEXUS - CRM Inteligente</title>
+    <!-- Token CSRF -->
+    <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+
+    <!-- Fontes Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 & Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jsPDF (geração da Proposta Comercial em PDF, direto no navegador) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            prefix: 'tw-',
+            corePlugins: {
+                preflight: false,
+            }
+        }
+    </script>
+
+    <style>
+        /* Variáveis de Cores Dinâmicas */
+        :root[data-theme="dark"] {
+            --neon-blue: #38bdf8;
+            --bg-body: #0b0f19;
+            --bg-sidebar: #090d16;
+            --bg-header: #111827;
+            --bg-card: #111827;
+            --bg-element: #1f2937;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+            --card-lead-bg: #1e293b;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            --pro-banner-bg: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+            --badge-pro-bg: rgba(6, 182, 212, 0.15);
+            --badge-pro-text: #22d3ee;
+            --badge-pro-border: rgba(6, 182, 212, 0.25);
+            --sidebar-hover: #1e293b;
+        }
+
+        :root[data-theme="light"] {
+            --neon-blue: #0284c7;
+            --bg-body: #f1f5f9;
+            --bg-sidebar: #ffffff;
+            --bg-header: #ffffff;
+            --bg-card: #ffffff;
+            --bg-element: #f8fafc;
+            --border-color: #cbd5e1;
+            --text-main: #0f172a;
+            --text-secondary: #64748b;
+            --card-lead-bg: #ffffff;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+            --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.12);
+            --pro-banner-bg: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%);
+            --badge-pro-bg: rgba(2, 132, 199, 0.1);
+            --badge-pro-text: #0369a1;
+            --badge-pro-border: rgba(2, 132, 199, 0.3);
+            --sidebar-hover: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', 'Montserrat', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            letter-spacing: -0.01em;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            margin: 0;
+        }
+
+        /* --- Sidebar Estilo CRM Moderno --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+            z-index: 1050;
+        }
+
+        body.sidebar-collapsed .sidebar {
+            width: 76px;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            min-height: 76px;
+        }
+
+        body.sidebar-collapsed .sidebar-header {
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        body.sidebar-collapsed .sidebar-brand-text,
+        body.sidebar-collapsed .sidebar-nav span,
+        body.sidebar-collapsed .sidebar-item span:not(.sidebar-badge),
+        body.sidebar-collapsed .sidebar-section-title {
+            display: none !important;
+        }
+
+        body.sidebar-collapsed .sidebar-item {
+            justify-content: center;
+            padding: 12px 0;
+            margin: 0 8px;
+        }
+
+        body.sidebar-collapsed .sidebar-item i {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .dt-logo-box {
+            width: 40px;
+            height: 40px;
+            background-color: #0284c7;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+            flex-shrink: 0;
+        }
+
+        .brand-title {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, var(--text-main), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+        }
+
+        .brand-crm {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            background: linear-gradient(90deg, var(--neon-blue), #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-left: 4px;
+            padding: 2px 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--bg-element);
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .sidebar-section-title {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            padding: 10px 12px 4px 12px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background-color: var(--sidebar-hover);
+            color: var(--neon-blue);
+        }
+
+        .sidebar-item i {
+            font-size: 1.2rem;
+            min-width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .pin-btn {
+            margin-left: auto;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            opacity: 0;
+            transition: opacity 0.2s ease, color 0.2s ease;
+            cursor: pointer;
+            padding: 2px 6px;
+            font-size: 0.85rem;
+        }
+
+        .sidebar-item:hover .pin-btn {
+            opacity: 1;
+        }
+
+        .pin-btn:hover {
+            color: var(--neon-blue);
+        }
+
+        .pin-btn.pinned {
+            opacity: 1;
+            color: var(--neon-blue);
+        }
+
+        .sidebar-badge {
+            margin-left: auto;
+            background-color: #ef4444;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        body.sidebar-collapsed .sidebar-badge,
+        body.sidebar-collapsed .pin-btn {
+            display: none !important;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.sidebar-collapsed .main-content {
+            margin-left: 76px;
+        }
+
+        .top-navbar {
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-color);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 76px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #334155;
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 34px;
+            border: 1px solid var(--border-color);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked+.slider {
+            background-color: #0284c7;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        .badge-pro-custom {
+            background-color: var(--badge-pro-bg) !important;
+            color: var(--badge-pro-text) !important;
+            border: 1px solid var(--badge-pro-border);
+            font-size: 11px;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            height: 100%;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--neon-blue);
+        }
+
+        .kpi-label {
+            color: var(--text-secondary) !important;
+            font-size: 11.5px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+        }
+
+        .bg-light-success-soft {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .bg-light-primary-soft {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .bg-light-warning-soft {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+        }
+
+        .bg-light-info-soft {
+            background-color: rgba(6, 182, 212, 0.15);
+            color: #22d3ee;
+        }
+
+        .pro-banner {
+            background: var(--pro-banner-bg);
+            border-radius: 12px;
+            color: var(--text-main);
+            padding: 20px 24px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            border-left: 5px solid #0284c7;
+            transition: background 0.3s ease;
+        }
+
+        .btn-pro-sober {
+            background-color: #0369a1;
+            color: #ffffff;
+            border: 1px solid #0284c7;
+            transition: background-color 0.2s;
+        }
+
+        .btn-pro-sober:hover {
+            background-color: #0284c7;
+            color: #ffffff;
+        }
+
+        .form-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: var(--bg-element);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.92rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: var(--bg-element);
+            color: var(--text-main);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .kanban-board {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 32px;
+            gap: 16px;
+            align-items: flex-start;
+            min-height: 650px;
+            width: 100%;
+        }
+
+        .kanban-column {
+            flex: 1;
+            min-width: 230px;
+            flex-shrink: 0;
+            border-radius: 12px;
+            padding: 14px;
+            min-height: 580px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease;
+        }
+
+        .kanban-column-header {
+            cursor: grab;
+            user-select: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            touch-action: none;
+        }
+
+        .kanban-column-header:hover {
+            background-color: rgba(100, 100, 100, 0.08);
+        }
+
+        .kanban-column[data-status="Novo Lead"] {
+            border-top: 4px solid #3b82f6;
+        }
+
+        .kanban-column[data-status="Em Negociação"] {
+            border-top: 4px solid #f59e0b;
+        }
+
+        .kanban-column[data-status="Proposta Enviada"] {
+            border-top: 4px solid #8b5cf6;
+        }
+
+        .kanban-column[data-status="Pós-Venda"] {
+            border-top: 4px solid #06b6d4;
+        }
+
+        .kanban-column[data-status="Fechado"] {
+            border-top: 4px solid #10b981;
+        }
+
+        .kanban-column[data-status="Cancelado"] {
+            border-top: 4px solid #ef4444;
+        }
+
+        .card-lead {
+            background-color: var(--card-lead-bg);
+            border: 1px solid var(--border-color) !important;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: var(--card-shadow);
+            cursor: grab;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
+        }
+
+        .card-lead:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .card-novo-lead {
+            border-left: 4px solid #3b82f6 !important;
+        }
+
+        .card-em-negociacao,
+        .card-em-negociação {
+            border-left: 4px solid #f59e0b !important;
+        }
+
+        .card-proposta-enviada {
+            border-left: 4px solid #8b5cf6 !important;
+        }
+
+        .card-pos-venda,
+        .card-pós-venda {
+            border-left: 4px solid #06b6d4 !important;
+        }
+
+        .card-fechado {
+            border-left: 4px solid #10b981 !important;
+        }
+
+        .card-cancelado {
+            border-left: 4px solid #ef4444 !important;
+        }
+
+        .cards-container {
+            min-height: 480px;
+        }
+
+        /* Pulso instantâneo ao mudar de coluna, confirmando a atualização sem esperar o F5 */
+        @keyframes flashCardUpdate {
+            0% { box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.6); }
+            100% { box-shadow: var(--card-shadow); }
+        }
+
+        .card-status-updated {
+            animation: flashCardUpdate 0.5s ease-out;
+        }
+
+        /* Identidade visual do botão de Proposta (mesma cor da etapa "Proposta Enviada") */
+        .text-proposta {
+            color: #8b5cf6 !important;
+        }
+
+        .btn-outline-proposta {
+            color: #8b5cf6;
+            border: 1px solid #8b5cf6;
+            background-color: transparent;
+        }
+
+        .btn-outline-proposta:hover {
+            background-color: #8b5cf6;
+            color: #ffffff;
+        }
+
+        .text-secondary {
+            color: var(--text-secondary) !important;
+        }
+
+        .btn-light {
+            background-color: var(--bg-element);
+            color: var(--text-main);
+            border-color: var(--border-color) !important;
+        }
+
+        .btn-light:hover {
+            background-color: var(--border-color);
+            color: var(--text-main);
+        }
+
+        /* Estilo da Modal IA Flutuante */
+        #nexus-ai-modal {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 384px;
+            height: 500px;
+            background-color: #0f172a;
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(8, 145, 178, 0.25);
+            display: flex;
+            flex-direction: column;
+            z-index: 1060;
+            transition: all 0.3s ease;
+            transform: scale(0.95);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #nexus-ai-modal.show-ai {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Estilo do Chat Retrátil de Comunicação Interna */
+        #internal-chat-drawer {
+            position: fixed;
+            bottom: 0;
+            right: 80px;
+            width: 360px;
+            height: 450px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            z-index: 1055;
+            transition: transform 0.3s ease;
+            transform: translateY(100%);
+        }
+
+        #internal-chat-drawer.show-chat {
+            transform: translateY(0);
+        }
+
+        /* Drawer flutuante do Diretório de Propostas & Orçamentos (abre por cima do dashboard) */
+        #painelDiretorioContatos {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: min(760px, 92vw);
+            background-color: var(--bg-card);
+            border-left: 1px solid var(--border-color);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.25);
+            z-index: 1065;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+        #painelDiretorioContatos.show-diretorio {
+            transform: translateX(0);
+        }
+
+        #diretorioBackdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 1064;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #diretorioBackdrop.show-backdrop {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @media (max-width: 576px) {
+            #painelDiretorioContatos {
+                width: 100vw;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR LATERAL RETRÁTIL -->
+    <aside class="sidebar" id="appSidebar">
+        <div class="sidebar-header">
+            <div class="d-flex align-items-center gap-2">
+                <div class="dt-logo-box">DT</div>
+                <div class="d-flex align-items-center sidebar-brand-text">
+                    <h1 class="brand-title mb-0">DT NEXUS</h1>
+                    <span class="brand-crm">CRM</span>
+                </div>
+            </div>
+            <button class="btn btn-sm text-secondary border-0 p-1" onclick="toggleSidebar()" title="Recolher/Expandir Menu">
+                <i class="bi bi-list fs-5"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-menu" id="sidebarMenu">
+            <!-- Seção Dinâmica de Favoritos (Pins) -->
+            <div id="favoritesSection" style="display: none;">
+                <div class="sidebar-section-title text-info"><i class="bi bi-pin-angle-fill me-1"></i> Favoritos</div>
+                <div id="favoritesList" class="d-flex flex-column gap-1 mb-2"></div>
+                <hr class="border-secondary opacity-25 my-2">
+            </div>
+
+            <div class="sidebar-section-title">Core & Inteligência</div>
+            <a href="/" class="sidebar-item active" data-id="dashboard" title="Visão Geral & Métricas">
+                <i class="bi bi-speedometer2 text-primary"></i>
+                <span>Visão Geral & Métricas</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+            
+            <a href="#" class="sidebar-item" data-id="nexus-ia" onclick="toggleNexusAI(event)" title="NEXUS IA">
+                <i class="fa-solid fa-microchip text-info"></i>
+                <span class="fw-bold text-info">NEXUS IA</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+
+            <div class="sidebar-section-title">Pipeline Comercial</div>
+            <!-- Quadro Geral agora rola direto até o Kanban (antes apontava pra "/" igual à Visão Geral) -->
+            <a href="#kanbanBoard" class="sidebar-item" data-id="kanban" onclick="irParaKanban(event)" title="Quadro Geral">
+                <i class="bi bi-kanban text-warning"></i>
+                <span>Quadro Geral</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+
+            <a href="#" class="sidebar-item" data-id="propostas" onclick="toggleDiretorioContatos(event)" title="Propostas & Orçamentos">
+                <i class="bi bi-file-earmark-text-fill text-primary"></i>
+                <span>Propostas & Orçamentos</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+
+            <div class="sidebar-section-title">Atendimento Omnichannel</div>
+            <a href="#" class="sidebar-item" data-id="whatsapp" onclick="abrirWhatsAppGeral(event)" title="WhatsApp">
+                <i class="bi bi-whatsapp text-success"></i>
+                <span>WhatsApp</span>
+                <span class="sidebar-badge">3</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+
+            <div class="sidebar-section-title">Outros Módulos</div>
+            <a href="#" class="sidebar-item" data-id="kanban-grupos" onclick="alert('Módulo Equipes em breve!')" title="Equipes">
+                <i class="bi bi-layers-half text-info"></i>
+                <span>Equipes</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+            <a href="#" class="sidebar-item" data-id="kanban-filas" onclick="alert('Módulo Fila de Espera em breve!')" title="Fila de Espera">
+                <i class="bi bi-reception-4 text-secondary"></i>
+                <span>Fila de Espera</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+
+            <div class="sidebar-section-title">Utilitários & Ferramentas</div>
+            <a href="#" class="sidebar-item" data-id="tags" onclick="alert('Etiquetas & Categorias em breve!')" title="Etiquetas & Categorias">
+                <i class="bi bi-tag-fill text-danger"></i>
+                <span>Etiquetas & Categorias</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+            <a href="#" class="sidebar-item" data-id="respostas" onclick="alert('Macros & Respostas em breve!')" title="Macros & Respostas">
+                <i class="bi bi-lightning-fill text-info"></i>
+                <span>Macros & Respostas</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+            <a href="#" class="sidebar-item" data-id="tarefas" onclick="alert('Gestão de Atividades em breve!')" title="Gestão de Atividades">
+                <i class="bi bi-check2-all text-warning"></i>
+                <span>Gestão de Atividades</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+            <a href="#" class="sidebar-item" data-id="agendamentos" onclick="alert('Agenda Executiva em breve!')" title="Agenda Executiva">
+                <i class="bi bi-calendar-check-fill text-success"></i>
+                <span>Agenda Executiva</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+            
+            <!-- Comunicação Interna ajustada com o chat retrátil -->
+            <a href="#" class="sidebar-item" data-id="comunicacao-interna" onclick="toggleInternalChat(event)" title="Comunicação Interna">
+                <i class="bi bi-headset text-info"></i>
+                <span>Comunicação Interna</span>
+                <span class="sidebar-badge">1</span>
+                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="main-content">
+        <!-- Top Navbar -->
+        <header class="top-navbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-sm btn-light border" onclick="toggleSidebar()" title="Menu">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
+                <span class="text-secondary fw-semibold small">SYSTEM ENTERPRISE PIPELINE / <span class="text-main fw-bold">WORKSPACE ATIVO</span></span>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="theme-switch-wrapper" title="Alternar Modo Claro / Escuro">
+                    <i class="bi bi-sun-fill text-warning fs-6"></i>
+                    <label class="theme-switch mb-0">
+                        <input type="checkbox" id="checkboxTheme" onchange="alternarTema()">
+                        <span class="slider"></span>
+                    </label>
+                    <i class="bi bi-moon-stars-fill text-info fs-6"></i>
+                </div>
+
+                <span class="badge badge-pro-custom fw-bold px-3 py-2 rounded-pill shadow-sm">PLAN: NEXUS PRO ACTIVE</span>
+                <form th:action="@{/logout}" method="post" class="mb-0">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm fw-semibold px-3 rounded-2 text-secondary">
+                        <i class="bi bi-box-arrow-right me-1"></i> Sair
+                    </button>
+                </form>
+            </div>
+        </header>
+
+        <div class="container-fluid px-4 py-4">
+
+            <!-- DIRETÓRIO DE PROPOSTAS & CLIENTES (Drawer flutuante sobre o dashboard, sem trocar de página) -->
+            <div id="diretorioBackdrop" onclick="toggleDiretorioContatos(event)"></div>
+            <div id="painelDiretorioContatos">
+                <div class="form-card p-4 h-100 d-flex flex-column" style="border: none; box-shadow: none; border-radius: 0;">
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-file-earmark-text-fill text-info fs-4"></i>
+                            <h5 class="fw-bold mb-0">Propostas & Orçamentos &bull; Diretório de Clientes</h5>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleDiretorioContatos(event)">
+                            <i class="bi bi-x-lg me-1"></i> Fechar
+                        </button>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-8">
+                            <input type="text" id="filtraDiretorioInput" class="form-control" placeholder="Filtrar clientes na tabela integrada..." onkeyup="filtrarTabelaContatos()">
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-info fw-semibold text-dark" onclick="abrirModalCadastroLead()">
+                                <i class="bi bi-plus-lg me-1"></i> Adicionar Novo Lead
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive flex-fill" style="overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0" style="color: var(--text-main);">
+                            <thead style="background-color: var(--bg-element); position: sticky; top: 0; z-index: 1;">
+                                <tr>
+                                    <th class="py-2">Nome</th>
+                                    <th class="py-2">Empresa</th>
+                                    <th class="py-2">Telefone</th>
+                                    <th class="py-2">Estágio Atual</th>
+                                    <th class="py-2 text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaDiretorioCorpo">
+                                <tr th:each="c : ${contacts}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                                    <td class="fw-bold" th:text="${c.name}">Nome</td>
+                                    <td th:text="${c.company}">Empresa</td>
+                                    <td th:text="${c.phone}">Telefone</td>
+                                    <td><span class="badge bg-secondary bg-opacity-25 text-main px-2 py-1" th:text="${c.statusColumn}">Status</span></td>
+                                    <td class="text-end">
+                                        <button class="btn btn-sm btn-light border text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
+                                        <button class="btn btn-sm btn-light border text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="WhatsApp"><i class="bi bi-whatsapp"></i></button>
+                                        <button class="btn btn-sm btn-light border text-proposta" onclick="abrirComposicaoProposta(this)" title="Redigir e Enviar Proposta"><i class="bi bi-file-earmark-pdf"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BARRA DE KPIS DO PIPELINE (dados reais vindos do banco) -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="kpi-card d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="kpi-label text-uppercase">Pipeline Total</span>
+                            <h4 class="mb-0 fw-bold mt-1" th:text="${'R$ ' + #numbers.formatDecimal(valorFunil, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
+                        </div>
+                        <div class="kpi-icon-wrapper bg-light-success-soft">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="kpi-card d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="kpi-label text-uppercase">Leads em Carteira</span>
+                            <h4 class="mb-0 fw-bold mt-1" th:text="${totalLeads}">0</h4>
+                        </div>
+                        <div class="kpi-icon-wrapper bg-light-primary-soft">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="kpi-card d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="kpi-label text-uppercase">Taxa de Conversão</span>
+                            <h4 class="mb-0 fw-bold mt-1" th:text="${taxaConversao + '%'}">0.0%</h4>
+                        </div>
+                        <div class="kpi-icon-wrapper bg-light-warning-soft">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="kpi-card d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="kpi-label text-uppercase">Automação & IA</span>
+                            <h4 class="mb-0 fw-bold mt-1 text-info" style="font-size: 1.05rem;"><i class="bi bi-shield-check me-1"></i> Ativo & Seguro</h4>
+                        </div>
+                        <div class="kpi-icon-wrapper bg-light-info-soft">
+                            <i class="bi bi-cpu"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banner Promocional / Upgrade PRO -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="pro-banner d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-rocket-takeoff fs-2 text-info"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Desbloqueie todo o potencial analítico com o DT NEXUS PRO</h6>
+                                <p class="small mb-0 text-secondary">Automações avançadas de funil, scoring preditivo de leads por IA e relatórios ilimitados.</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-pro-sober fw-bold px-4 shadow-sm rounded-2" onclick="alert('Módulo de Upgrade PRO acionado!');">
+                            <i class="bi bi-stars me-1"></i> Fazer Upgrade PRO
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BARRA ÚNICA DO KANBAN: busca instantânea + ações (substitui a antiga Barra de Comando e as duas buscas) -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 p-3 rounded-3 border border-secondary border-opacity-25 shadow-sm" style="background-color: var(--bg-card);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-funnel-fill text-info fs-5"></i>
+                            <span class="fw-bold small text-uppercase">Quadro Kanban &bull; Pipeline de Vendas</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap justify-content-lg-end">
+                            <div class="input-group input-group-sm" style="width: 340px; max-width: 100%;">
+                                <span class="input-group-text bg-transparent text-secondary" style="border-color: var(--border-color);">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" id="filtroKanbanInstantaneo" class="form-control form-control-sm" placeholder="Buscar por nome, empresa, telefone ou e-mail..." onkeyup="filtrarCardsKanban()">
+                                <button type="button" class="btn btn-outline-secondary" onclick="limparFiltroKanban()" title="Limpar busca">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                            <button onclick="abrirModalCadastroLead()" class="btn btn-info btn-sm fw-semibold text-dark px-3 d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-plus small"></i> Novo Lead
+                            </button>
+                            <button onclick="alert('Módulo de Tarefas em breve!')" class="btn btn-outline-secondary btn-sm px-3 d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-calendar-plus text-info small"></i> Tarefa
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" title="Filtros Avançados" onclick="alert('Filtros avançados em breve!')">
+                                <i class="fa-solid fa-sliders text-info"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Funil Kanban com 6 colunas fixas e interativas -->
+            <div class="kanban-board" id="kanbanBoard">
+
+                <!-- Coluna 1 -->
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-1" data-column-id="1" data-status="Novo Lead">
+                    <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
+                        <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
+                            <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Novo Lead</h6>
+                            <small class="text-muted opacity-50 ms-1">✏️</small>
+                        </div>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Novo Lead">0</span>
+                    </div>
+                    <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Novo Lead'}" class="card-lead card-novo-lead" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                            <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
+                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
+                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
+                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
+                                <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
+                                <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 2 -->
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-2" data-column-id="2" data-status="Em Negociação">
+                    <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
+                        <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
+                            <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Em Negociação</h6>
+                            <small class="text-muted opacity-50 ms-1">✏️</small>
+                        </div>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Em Negociação">0</span>
+                    </div>
+                    <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Em Negociação'}" class="card-lead card-em-negociacao" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                            <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
+                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
+                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
+                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
+                                <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
+                                <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 3 -->
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-3" data-column-id="3" data-status="Proposta Enviada">
+                    <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
+                        <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
+                            <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Proposta Enviada</h6>
+                            <small class="text-muted opacity-50 ms-1">✏️</small>
+                        </div>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Proposta Enviada">0</span>
+                    </div>
+                    <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Proposta Enviada'}" class="card-lead card-proposta-enviada" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                            <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
+                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
+                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
+                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
+                                <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
+                                <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 4 (Pós-Venda) -->
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-4" data-column-id="4" data-status="Pós-Venda">
+                    <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
+                        <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
+                            <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Pós-Venda</h6>
+                            <small class="text-muted opacity-50 ms-1">✏️</small>
+                        </div>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Pós-Venda">0</span>
+                    </div>
+                    <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Pós-Venda'}" class="card-lead card-pos-venda" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                            <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
+                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
+                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
+                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
+                                <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
+                                <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 5 -->
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-5" data-column-id="5" data-status="Fechado">
+                    <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
+                        <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
+                            <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Fechado</h6>
+                            <small class="text-muted opacity-50 ms-1">✏️</small>
+                        </div>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Fechado">0</span>
+                    </div>
+                    <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Fechado'}" class="card-lead card-fechado" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                            <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
+                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
+                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
+                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
+                                <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
+                                <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 6 -->
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-6" data-column-id="6" data-status="Cancelado">
+                    <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
+                        <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
+                            <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Cancelado</h6>
+                            <small class="text-muted opacity-50 ms-1">✏️</small>
+                        </div>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Cancelado">0</span>
+                    </div>
+                    <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Cancelado'}" class="card-lead card-cancelado" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                            <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
+                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
+                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
+                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
+                                <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
+                                <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
+                                <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL DE CADASTRO E EDIÇÃO DE LEAD (FLUTUANTE) -->
+    <div class="modal fade" id="modalCadastroLead" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0" style="background-color: var(--bg-card); color: var(--text-main);">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 py-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-person-plus-fill text-info fs-4"></i>
+                        <h5 class="modal-title fw-bold mb-0">DT NEXUS &bull; Cadastro & Avaliação de Lead</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                
+                <div class="modal-body p-4">
+                    <form id="formLeadModal" th:action="@{/save}" th:object="${contact}" method="post">
+                        <input type="hidden" id="modalLeadId" th:field="*{id}" />
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Nome do Cliente</label>
+                                <input type="text" class="form-control" id="modalLeadName" th:field="*{name}" placeholder="Ex: João Silva" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Empresa</label>
+                                <input type="text" class="form-control" id="modalLeadCompany" th:field="*{company}" placeholder="Ex: Tech Solutions">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Telefone / WhatsApp</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-element text-secondary border" style="border-color: var(--border-color); font-size: 0.85rem;">🇧🇷 +55</span>
+                                    <input type="text" class="form-control" id="modalLeadPhone" th:field="*{phone}" placeholder="(00) 00000-0000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Cargo na empresa</label>
+                                <input type="text" class="form-control" id="modalLeadJobTitle" th:field="*{jobTitle}" placeholder="Ex: Gerente / Diretor">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Porte da empresa</label>
+                                <select class="form-select" id="modalLeadCompanySize" th:field="*{companySize}">
+                                    <option value="">Selecione o tamanho da empresa</option>
+                                    <option value="Micro (1 a 10 funcionários)">Micro (1 a 10 funcionários)</option>
+                                    <option value="Pequena (11 a 50 funcionários)">Pequena (11 a 50 funcionários)</option>
+                                    <option value="Média (51 a 200 funcionários)">Média (51 a 200 funcionários)</option>
+                                    <option value="Grande (200+ funcionários)">Grande (200+ funcionários)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Valor Estimado (R$)</label>
+                                <input type="number" step="0.01" class="form-control" id="modalLeadValue" th:field="*{value}" placeholder="0,00">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-semibold">Estágio do Funil</label>
+                                <select class="form-select" id="modalLeadStatus" th:field="*{statusColumn}">
+                                    <option value="Novo Lead">Novo Lead</option>
+                                    <option value="Em Negociação">Em Negociação</option>
+                                    <option value="Proposta Enviada">Proposta Enviada</option>
+                                    <option value="Pós-Venda">Pós-Venda</option>
+                                    <option value="Fechado">Fechado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-semibold">E-mail de Contato</label>
+                                <input type="email" class="form-control" id="modalLeadEmail" th:field="*{email}" placeholder="cliente@email.com">
+                            </div>
+                        </div>
+
+                        <p class="text-secondary small mt-3 mb-3" style="font-size: 11.5px;">
+                            A DT NEXUS protege sua privacidade e garante conformidade com padrões de segurança em nuvem. Ao salvar, os dados serão provisionados no pipeline comercial ativo.
+                        </p>
+
+                        <div class="d-flex justify-content-end gap-2 pt-2 border-top border-secondary border-opacity-25">
+                            <button type="button" class="btn btn-outline-secondary fw-semibold px-3" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn fw-semibold px-4 text-white rounded-2" style="background-color: #0284c7; border-color: #0284c7;">
+                                <i class="bi bi-check-lg me-1"></i> Configurar / Salvar Lead
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Anotações -->
+    <div class="modal fade" id="modalNotas" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0" style="background-color: var(--bg-card); color: var(--text-main);">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 py-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-journal-text text-warning fs-4"></i>
+                        <h5 class="modal-title fw-bold mb-0">Anotações do Lead</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="notaContactId">
+
+                    <div class="d-flex gap-2 align-items-start mb-3">
+                        <textarea class="form-control" id="txtNovaNota" rows="2" placeholder="Escreva uma nova anotação sobre este lead..."></textarea>
+                        <button type="button" class="btn btn-warning fw-semibold text-dark flex-shrink-0" onclick="adicionarNota()">
+                            <i class="bi bi-plus-lg"></i> Adicionar
+                        </button>
+                    </div>
+
+                    <div id="listaNotasLead" style="max-height: 360px; overflow-y: auto;">
+                        <div class="text-center text-secondary py-4 small">Carregando anotações...</div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-color: var(--border-color);">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMPOSITOR DE PROPOSTA: dados do cliente pré-preenchidos, descrição em aberto para redigir -->
+    <div class="modal fade" id="modalComposicaoProposta" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0" style="background-color: var(--bg-card); color: var(--text-main);">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 py-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-file-earmark-text-fill text-proposta fs-4"></i>
+                        <h5 class="modal-title fw-bold mb-0">Compositor de Proposta</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <input type="hidden" id="propostaContactId">
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label small text-secondary fw-semibold">Cliente</label>
+                            <input type="text" class="form-control" id="propostaNome" placeholder="Nome do cliente">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-secondary fw-semibold">Empresa</label>
+                            <input type="text" class="form-control" id="propostaEmpresa" placeholder="Empresa">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-secondary fw-semibold">Valor da Proposta (R$)</label>
+                            <input type="number" step="0.01" class="form-control" id="propostaValor" placeholder="0,00">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">Telefone / WhatsApp</label>
+                            <input type="text" class="form-control" id="propostaTelefone" placeholder="(00) 00000-0000">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">E-mail do Cliente</label>
+                            <input type="email" class="form-control" id="propostaEmail" placeholder="cliente@email.com">
+                            <small class="text-secondary" style="font-size: 11px;">Copie aqui pra colar no seu Gmail/Outlook, se for enviar por e-mail.</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small text-secondary fw-semibold">Descrição / Escopo da Proposta</label>
+                        <textarea class="form-control" id="propostaDescricao" rows="7" placeholder="Descreva aqui o escopo, os serviços, prazos e condições conforme a necessidade deste cliente..."></textarea>
+                        <small class="text-secondary" style="font-size: 11px;">Este texto entra no corpo do PDF. Escreva livremente conforme a necessidade da empresa/cliente.</small>
+                    </div>
+
+                    <div id="propostaStatusGeracao" class="small text-secondary mb-2" style="min-height: 18px;"></div>
+
+                    <div class="d-flex flex-wrap gap-2 pt-3 border-top border-secondary border-opacity-25">
+                        <button type="button" class="btn btn-outline-proposta fw-semibold" onclick="gerarPDFComposicao()">
+                            <i class="bi bi-file-earmark-pdf me-1"></i> 1. Gerar PDF da Proposta
+                        </button>
+                        <button type="button" id="btnEnviarPropostaZap" class="btn btn-success fw-semibold text-white" onclick="enviarPropostaWhatsApp()" disabled>
+                            <i class="bi bi-whatsapp me-1"></i> Enviar via WhatsApp
+                        </button>
+                    </div>
+                    <small class="text-secondary d-block mt-2" style="font-size: 11px;">
+                        <i class="bi bi-info-circle me-1"></i> O WhatsApp abre pronto para envio, mas por segurança do navegador não anexa o arquivo sozinho — é só arrastar o PDF já baixado para a conversa. Para enviar por e-mail, use o Gmail/Outlook do seu computador e anexe o mesmo PDF. Alterou algum dado? Clique em "Gerar PDF" novamente antes de enviar.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEXUS ZAP &bull; CENTRAL DE ATENDIMENTO OMNICHANNEL -->
+    <div id="modalWhatsappChat" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content shadow-lg border-0" style="background-color: var(--bg-card); color: var(--text-main); height: 80vh; overflow: hidden; min-width: 700px; min-height: 500px;">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                            <i class="bi bi-whatsapp fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">Nexus Zap &bull; Central de Atendimento</h5>
+                            <small class="text-success fw-semibold"><i class="bi bi-circle-fill" style="font-size: 8px;"></i> Sincronizado com a Base do CRM</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                
+                <div class="modal-body p-0 d-flex" style="height: calc(80vh - 70px);">
+                    
+                    <!-- COLUNA ESQUERDA: LISTA DE CLIENTES DO CRM -->
+                    <div class="border-end border-secondary border-opacity-25 d-flex flex-column" style="width: 350px; min-width: 280px; background-color: var(--bg-body);">
+                        <div class="p-3 border-bottom border-secondary border-opacity-25">
+                            <input type="text" id="filtroContatosZap" class="form-control form-control-sm" placeholder="Pesquisar cliente ou telefone..." onkeyup="filtrarContatosOmni()">
+                        </div>
+                        <div class="flex-fill overflow-auto p-2" id="listaContatosOmni" style="max-height: calc(80vh - 130px);">
+                            <div class="text-center text-muted py-4 small">Carregando contatos do CRM...</div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA DIREITA: PAINEL DE DISPARO E INTERAÇÃO W.ME -->
+                    <div class="flex-fill d-flex flex-column bg-card p-4 justify-content-between overflow-auto">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25 pb-3 mb-4">
+                                <div>
+                                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Cliente Selecionado:</span>
+                                    <h4 id="painelNomeCliente" class="fw-bold mb-0 text-info">Nenhum cliente selecionado</h4>
+                                </div>
+                                <div class="text-end">
+                                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Telefone / WhatsApp:</span>
+                                    <span id="painelTelefoneCliente" class="badge bg-secondary font-monospace fs-6">--</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label small text-secondary fw-semibold">Mensagem Rápida / Script Comercial:</label>
+                                <textarea id="textoMensagemDireta" class="form-control" rows="4" placeholder="Digite sua mensagem para o cliente..."></textarea>
+                            </div>
+
+                            <div class="d-flex gap-2 mb-3 flex-wrap">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="inserirMacro('Olá! Tudo bem? Passando para acompanhar o andamento do seu projeto com o DT NEXUS.')">
+                                    <i class="bi bi-lightning me-1"></i> Macro: Acompanhamento
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="inserirMacro('Olá! Segue a proposta comercial solicitada em nosso sistema.')">
+                                    <i class="bi bi-lightning me-1"></i> Macro: Proposta
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="border-top border-secondary border-opacity-25 pt-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <span class="text-muted small"><i class="bi bi-info-circle me-1"></i> O disparo abrirá o WhatsApp Web direcionado para o número do contato.</span>
+                            <div class="d-flex gap-2">
+                                <a href="https://web.whatsapp.com" target="_blank" class="btn btn-outline-success btn-sm fw-semibold">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i> Abrir Web Oficial
+                                </a>
+                                <button id="btnEnviarDireto" type="button" class="btn btn-success fw-bold px-4 text-white" onclick="dispararWhatsAppDireto()" disabled>
+                                    <i class="bi bi-whatsapp me-1"></i> Enviar via WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Janela Flutuante do Nexus IA -->
+    <div id="nexus-ai-modal">
+        <!-- Header do Chat -->
+        <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom border-secondary border-opacity-25" style="background-color: rgba(15,23,42,0.8);">
+            <div class="d-flex align-items-center gap-2">
+                <div class="rounded-2 bg-info bg-opacity-10 border border-info border-opacity-25 d-flex align-items-center justify-content-center text-info" style="width: 32px; height: 32px;">
+                    <i class="fa-solid fa-microchip"></i>
+                </div>
+                <div>
+                    <h6 class="text-white mb-0 fw-bold fs-6">NEXUS IA</h6>
+                    <span class="text-info" style="font-size: 10px;"><i class="fa-solid fa-circle text-info me-1" style="font-size: 6px;"></i>Online & Pronto</span>
+                </div>
+            </div>
+            <button onclick="toggleNexusAI(event)" class="btn btn-sm text-secondary hover:text-white border-0">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- ÁREA ONDE AS MENSAGENS APARECEM -->
+        <div id="nexus-ai-messages" class="flex-grow-1 p-3 overflow-auto text-secondary small d-flex flex-column gap-2" style="height: 380px;">
+            <div class="d-flex gap-2">
+                <div class="rounded-circle bg-info bg-opacity-10 border border-info border-opacity-25 d-flex align-items-center justify-content-center text-info flex-shrink-0" style="width: 28px; height: 28px; font-size: 11px;">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div class="p-2.5 rounded-3 text-light" style="background-color: #1e293b; font-size: 12px; line-height: 1.4;">
+                    Olá! Analisei o pipeline de hoje. Quer que eu gere um resumo dos leads que estão com propostas pendentes?
+                </div>
+            </div>
+        </div>
+
+        <!-- FORMULÁRIO DE ENVIO -->
+        <div class="p-2 border-top border-secondary border-opacity-25" style="background-color: rgba(15,23,42,0.5);">
+            <form onsubmit="event.preventDefault(); enviarMensagemNexusAI();" class="d-flex align-items-center gap-2 mb-0">
+                <input type="text" id="nexus-ai-input" placeholder="Digite sua instrução para o Nexus IA..." class="form-control form-control-sm bg-dark text-white border-secondary border-opacity-25">
+                <button type="submit" id="nexus-ai-send" class="btn btn-info text-dark btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 32px;">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chat Retrátil de Comunicação Interna -->
+    <div id="internal-chat-drawer">
+        <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom border-secondary border-opacity-25 bg-element" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-headset text-info fs-5"></i>
+                <h6 class="mb-0 fw-bold small">Comunicação Interna</h6>
+            </div>
+            <button onclick="toggleInternalChat(event)" class="btn btn-sm text-secondary border-0 p-0">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="flex-fill p-3 overflow-auto small text-secondary d-flex flex-column gap-2" id="internal-chat-messages" style="height: 330px;">
+            <div class="p-2 rounded bg-element border border-secondary border-opacity-15">
+                <strong class="text-main d-block">Suporte Geral:</strong>
+                Bem-vindo ao canal de chat da equipe interna!
+            </div>
+        </div>
+        <div class="p-2 border-top border-secondary border-opacity-25 bg-element">
+            <form onsubmit="event.preventDefault(); enviarMensagemInterna();" class="d-flex gap-2 mb-0">
+                <input type="text" id="internal-chat-input" placeholder="Digite sua mensagem..." class="form-control form-control-sm">
+                <button type="submit" class="btn btn-info btn-sm text-dark px-3">Enviar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts de Funcionalidade & Correções de Kanban/Diretório -->
+    <script>
+        let draggedCard = null;
+        let draggedColumn = null;
+
+        const csrfTokenMeta = document.querySelector("meta[name='_csrf']");
+        const csrfHeaderMeta = document.querySelector("meta[name='_csrf_header']");
+        
+        const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute("content") : '';
+        const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.getAttribute("content") : 'X-CSRF-TOKEN';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedTheme = localStorage.getItem('dt_nexus_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('checkboxTheme').checked = (savedTheme === 'dark');
+
+            const savedSidebarState = localStorage.getItem('dt_nexus_sidebar');
+            if(savedSidebarState === 'collapsed') {
+                document.body.classList.add('sidebar-collapsed');
+            }
+
+            carregarPinsSalvos();
+            atualizarContadores();
+        });
+
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+            const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+            localStorage.setItem('dt_nexus_sidebar', isCollapsed ? 'collapsed' : 'expanded');
+        }
+
+        function alternarTema() {
+            const isDark = document.getElementById('checkboxTheme').checked;
+            const newTheme = isDark ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('dt_nexus_theme', newTheme);
+        }
+
+        function atualizarContadores() {
+            document.querySelectorAll('.kanban-column').forEach(col => {
+                const count = col.querySelectorAll('.card-lead:not([style*="display: none"])').length;
+                const badge = col.querySelector('.count-badge');
+                if(badge) badge.textContent = count;
+            });
+        }
+
+        // Menu "Quadro Geral": rola suavemente até o Kanban, sem recarregar a página
+        function irParaKanban(e) {
+            if (e) e.preventDefault();
+            const board = document.getElementById('kanbanBoard');
+            if (board) board.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Abre/fecha o drawer de Propostas & Orçamentos por cima do dashboard, sem trocar de página
+        function toggleDiretorioContatos(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            const painel = document.getElementById('painelDiretorioContatos');
+            const backdrop = document.getElementById('diretorioBackdrop');
+            if (!painel) return;
+
+            const vaiAbrir = !painel.classList.contains('show-diretorio');
+            painel.classList.toggle('show-diretorio', vaiAbrir);
+            if (backdrop) backdrop.classList.toggle('show-backdrop', vaiAbrir);
+
+            if (vaiAbrir) {
+                const inputFiltro = document.getElementById('filtraDiretorioInput');
+                if (inputFiltro) setTimeout(() => inputFiltro.focus(), 300);
+            }
+        }
+
+        // Fecha o drawer com a tecla ESC, como qualquer painel flutuante
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const painel = document.getElementById('painelDiretorioContatos');
+                if (painel && painel.classList.contains('show-diretorio')) {
+                    toggleDiretorioContatos();
+                }
+            }
+        });
+
+        function filtrarTabelaContatos() {
+            const termo = document.getElementById('filtraDiretorioInput').value.toLowerCase();
+            const linhas = document.querySelectorAll('#tabelaDiretorioCorpo tr');
+            linhas.forEach(linha => {
+                const texto = linha.innerText.toLowerCase();
+                linha.style.display = texto.includes(termo) ? '' : 'none';
+            });
+        }
+
+        let modalCadastroInstance = null;
+
+        function abrirModalCadastroLead() {
+            document.getElementById('modalLeadId').value = '';
+            document.getElementById('modalLeadName').value = '';
+            document.getElementById('modalLeadCompany').value = '';
+            document.getElementById('modalLeadPhone').value = '';
+            document.getElementById('modalLeadValue').value = '';
+            document.getElementById('modalLeadJobTitle').value = '';
+            document.getElementById('modalLeadCompanySize').value = '';
+            document.getElementById('modalLeadEmail').value = '';
+            document.getElementById('modalLeadStatus').value = 'Novo Lead';
+
+            const modalEl = document.getElementById('modalCadastroLead');
+            if (!modalCadastroInstance) {
+                modalCadastroInstance = new bootstrap.Modal(modalEl);
+            }
+            modalCadastroInstance.show();
+        }
+
+        function abrirModalEditarLead(btn) {
+            // Lê os dados direto do elemento (card do Kanban ou linha da tabela do diretório)
+            const origem = btn.closest('.card-lead') || btn.closest('tr');
+
+            document.getElementById('modalLeadId').value = origem ? (origem.getAttribute('data-id') || '') : '';
+            document.getElementById('modalLeadName').value = origem ? (origem.getAttribute('data-nome') || '') : '';
+            document.getElementById('modalLeadCompany').value = origem ? (origem.getAttribute('data-empresa') || '') : '';
+            document.getElementById('modalLeadPhone').value = origem ? (origem.getAttribute('data-telefone') || '') : '';
+            document.getElementById('modalLeadValue').value = origem ? (origem.getAttribute('data-valor') || '') : '';
+            document.getElementById('modalLeadJobTitle').value = origem ? (origem.getAttribute('data-cargo') || '') : '';
+            document.getElementById('modalLeadCompanySize').value = origem ? (origem.getAttribute('data-porte') || '') : '';
+            document.getElementById('modalLeadEmail').value = origem ? (origem.getAttribute('data-email') || '') : '';
+
+            const coluna = origem ? origem.closest('.kanban-column') : null;
+            document.getElementById('modalLeadStatus').value = coluna ? coluna.getAttribute('data-status') : 'Novo Lead';
+
+            const modalEl = document.getElementById('modalCadastroLead');
+            if (!modalCadastroInstance) {
+                modalCadastroInstance = new bootstrap.Modal(modalEl);
+            }
+            modalCadastroInstance.show();
+        }
+
+        // Busca única do Kanban: filtra na hora por nome, empresa, telefone ou e-mail (todos os leads já estão na página)
+        function filtrarCardsKanban() {
+            const termo = document.getElementById('filtroKanbanInstantaneo').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.card-lead');
+
+            cards.forEach(card => {
+                const nome = (card.getAttribute('data-nome') || '').toLowerCase();
+                const empresa = (card.getAttribute('data-empresa') || '').toLowerCase();
+                const telefone = (card.getAttribute('data-telefone') || '').toLowerCase();
+                const email = (card.getAttribute('data-email') || '').toLowerCase();
+
+                if (nome.includes(termo) || empresa.includes(termo) || telefone.includes(termo) || email.includes(termo)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            atualizarContadores();
+        }
+
+        function limparFiltroKanban() {
+            const input = document.getElementById('filtroKanbanInstantaneo');
+            input.value = '';
+            filtrarCardsKanban();
+            input.focus();
+        }
+
+        function togglePin(event, btn) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const item = btn.closest('.sidebar-item');
+            const itemId = item.getAttribute('data-id');
+            
+            let pinnedItems = JSON.parse(localStorage.getItem('dt_nexus_pins') || '[]');
+
+            if (pinnedItems.includes(itemId)) {
+                pinnedItems = pinnedItems.filter(id => id !== itemId);
+            } else {
+                pinnedItems.push(itemId);
+            }
+
+            localStorage.setItem('dt_nexus_pins', JSON.stringify(pinnedItems));
+            carregarPinsSalvos();
+        }
+
+        function carregarPinsSalvos() {
+            const pinnedItems = JSON.parse(localStorage.getItem('dt_nexus_pins') || '[]');
+            const favoritesSection = document.getElementById('favoritesSection');
+            const favoritesList = document.getElementById('favoritesList');
+            
+            favoritesList.innerHTML = '';
+
+            if (pinnedItems.length > 0) {
+                favoritesSection.style.display = 'block';
+                pinnedItems.forEach(id => {
+                    const originalItem = document.querySelector(`.sidebar-menu .sidebar-item[data-id="${id}"]`);
+                    if (originalItem) {
+                        const clone = originalItem.cloneNode(true);
+                        clone.classList.add('favorite-item');
+                        
+                        const pinIcon = clone.querySelector('.pin-btn i');
+                        pinIcon.className = "bi bi-pin-angle-fill text-info";
+                        clone.querySelector('.pin-btn').classList.add('pinned');
+                        
+                        favoritesList.appendChild(clone);
+                    }
+                });
+
+                document.querySelectorAll('.sidebar-menu > .sidebar-item').forEach(item => {
+                    const id = item.getAttribute('data-id');
+                    const pinBtn = item.querySelector('.pin-btn');
+                    const icon = pinBtn.querySelector('i');
+                    if (pinnedItems.includes(id)) {
+                        icon.className = "bi bi-pin-angle-fill text-info";
+                        pinBtn.classList.add('pinned');
+                    } else {
+                        icon.className = "bi bi-pin";
+                        pinBtn.classList.remove('pinned');
+                    }
+                });
+
+            } else {
+                favoritesSection.style.display = 'none';
+            }
+        }
+
+        function enableColumnEdit(container) {
+            const titleEl = container.querySelector('.column-title');
+            if (titleEl.querySelector('input')) return;
+
+            const currentText = titleEl.innerText;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentText;
+            input.className = "form-control form-control-sm bg-dark text-white p-1 border-info";
+            
+            titleEl.innerText = '';
+            titleEl.appendChild(input);
+            input.focus();
+            input.select();
+
+            const saveColumnName = () => {
+                const newText = input.value.trim() || currentText;
+                titleEl.innerText = newText;
+                
+                const column = container.closest('.kanban-column');
+                const columnId = column.getAttribute('data-column-id');
+                column.setAttribute('data-status', newText);
+
+                const headers = { 'Content-Type': 'application/json' };
+                if (csrfToken) headers[csrfHeader] = csrfToken;
+
+                fetch(`/api/columns/${columnId}/rename`, {
+                    method: 'PATCH',
+                    headers: headers,
+                    body: JSON.stringify({ name: newText })
+                }).catch(() => console.log("Nome da coluna alterado localmente."));
+            };
+
+            input.addEventListener('blur', saveColumnName);
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    input.blur();
+                }
+            });
+        }
+
+        // Correção do Kanban: Atualização instantânea da cor e status do card sem precisar de F5
+        function cardDragStart(e) {
+            draggedCard = e.currentTarget;
+            e.stopPropagation();
+            e.dataTransfer.setData('text/plain', draggedCard.getAttribute('data-id'));
+            setTimeout(() => draggedCard.classList.add('opacity-50'), 0);
+        }
+
+        function cardDragEnd(e) {
+            if (draggedCard) draggedCard.classList.remove('opacity-50');
+            draggedCard = null;
+            e.stopPropagation();
+        }
+
+        function cardAllowDrop(e) {
+            e.preventDefault();
+            e.stopPropagation(); // evita que a coluna (drag de colunas) capture o evento do card
+            const container = e.currentTarget;
+            container.classList.add('bg-secondary', 'bg-opacity-10', 'rounded');
+        }
+
+        function cardDragLeave(e) {
+            e.stopPropagation();
+            const container = e.currentTarget;
+            container.classList.remove('bg-secondary', 'bg-opacity-10', 'rounded');
+        }
+
+        function cardDrop(e) {
+            e.preventDefault();
+            e.stopPropagation(); // impede que o drop "suba" e dispare também o columnDrop
+            const container = e.currentTarget;
+            container.classList.remove('bg-secondary', 'bg-opacity-10', 'rounded');
+
+            if (draggedCard) {
+                container.appendChild(draggedCard);
+                const column = container.closest('.kanban-column');
+                const newStatus = column.getAttribute('data-status');
+                const contactId = draggedCard.getAttribute('data-id');
+
+                // Atualização instantânea da borda lateral do card com base no novo estágio
+                draggedCard.classList.remove('card-novo-lead', 'card-em-negociacao', 'card-proposta-enviada', 'card-pos-venda', 'card-fechado', 'card-cancelado');
+                if (newStatus === 'Novo Lead') {
+                    draggedCard.classList.add('card-novo-lead');
+                } else if (newStatus === 'Em Negociação') {
+                    draggedCard.classList.add('card-em-negociacao');
+                } else if (newStatus === 'Proposta Enviada') {
+                    draggedCard.classList.add('card-proposta-enviada');
+                } else if (newStatus === 'Pós-Venda') {
+                    draggedCard.classList.add('card-pos-venda');
+                } else if (newStatus === 'Fechado') {
+                    draggedCard.classList.add('card-fechado');
+                } else if (newStatus === 'Cancelado') {
+                    draggedCard.classList.add('card-cancelado');
+                }
+
+                atualizarContadores();
+
+                // Feedback visual instantâneo de confirmação (independe da resposta do backend)
+                draggedCard.classList.add('card-status-updated');
+                setTimeout(() => draggedCard.classList.remove('card-status-updated'), 500);
+
+                const headers = { 'Content-Type': 'application/json' };
+                if (csrfToken) headers[csrfHeader] = csrfToken;
+
+                fetch(`/api/contacts/${contactId}/status`, {
+                    method: 'PATCH',
+                    headers: headers,
+                    body: JSON.stringify({ statusColumn: newStatus })
+                })
+                .then(response => {
+                    if (!response.ok) console.error("Erro ao sincronizar status do lead no backend.");
+                })
+                .catch(err => console.error("Erro na requisição:", err));
+            }
+        }
+
+        function columnDragStart(e) {
+            draggedColumn = e.currentTarget.closest('.kanban-column');
+            e.dataTransfer.setData('text/plain', draggedColumn.getAttribute('data-column-id'));
+            setTimeout(() => draggedColumn.classList.add('opacity-50'), 0);
+        }
+
+        function columnDragEnd(e) {
+            if (draggedColumn) draggedColumn.classList.remove('opacity-50');
+            draggedColumn = null;
+        }
+
+        function columnDragOver(e) { e.preventDefault(); }
+        function columnDragLeave(e) {}
+
+        function columnDrop(e) {
+            e.preventDefault();
+            const targetColumn = e.currentTarget.closest('.kanban-column');
+            const board = document.getElementById('kanbanBoard');
+            
+            if (draggedColumn && targetColumn && draggedColumn !== targetColumn) {
+                const allColumns = Array.from(board.querySelectorAll('.kanban-column'));
+                const draggedIndex = allColumns.indexOf(draggedColumn);
+                const targetIndex = allColumns.indexOf(targetColumn);
+
+                if (draggedIndex < targetIndex) {
+                    board.insertBefore(draggedColumn, targetColumn.nextSibling);
+                } else {
+                    board.insertBefore(draggedColumn, targetColumn);
+                }
+
+                const headers = { 'Content-Type': 'application/json' };
+                if (csrfToken) headers[csrfHeader] = csrfToken;
+
+                const novaOrdem = Array.from(board.querySelectorAll('.kanban-column')).map(col => col.getAttribute('data-column-id'));
+                fetch('/api/columns/reorder', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(novaOrdem)
+                }).catch(err => console.log("Ordem local aplicada com sucesso."));
+            }
+        }
+
+        let modalNotasInstance = null;
+
+        function escaparHtmlNota(texto) {
+            const div = document.createElement('div');
+            div.innerText = texto || '';
+            return div.innerHTML;
+        }
+
+        function formatarDataNota(iso) {
+            if (!iso) return '';
+            const d = new Date(iso);
+            if (isNaN(d.getTime())) return '';
+            return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function abrirModalNotas(btn) {
+            const origem = btn.closest('.card-lead');
+            const contactId = origem ? origem.getAttribute('data-id') : '';
+            document.getElementById('notaContactId').value = contactId || '';
+            document.getElementById('txtNovaNota').value = '';
+            document.getElementById('listaNotasLead').innerHTML = '<div class="text-center text-secondary py-4 small">Carregando anotações...</div>';
+
+            if (!modalNotasInstance) {
+                modalNotasInstance = new bootstrap.Modal(document.getElementById('modalNotas'));
+            }
+            modalNotasInstance.show();
+
+            if (!contactId) {
+                document.getElementById('listaNotasLead').innerHTML = '<div class="text-center text-danger py-4 small">Não foi possível identificar este lead.</div>';
+                return;
+            }
+
+            carregarNotas(contactId);
+        }
+
+        function carregarNotas(contactId) {
+            fetch(`/api/contacts/${contactId}/notes`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Falha ao carregar');
+                    return res.json();
+                })
+                .then(lista => renderizarNotas(lista))
+                .catch(() => {
+                    document.getElementById('listaNotasLead').innerHTML = '<div class="text-center text-danger py-4 small">Não foi possível carregar as anotações.</div>';
+                });
+        }
+
+        function renderizarNotas(lista) {
+            const container = document.getElementById('listaNotasLead');
+            if (!lista || lista.length === 0) {
+                container.innerHTML = '<div class="text-center text-secondary py-4 small">Nenhuma anotação registrada ainda.</div>';
+                return;
+            }
+
+            container.innerHTML = lista.map(nota => `
+                <div class="p-3 mb-2 rounded border border-secondary border-opacity-25" data-nota-id="${nota.id}">
+                    <div class="nota-visualizacao">
+                        <p class="mb-2" style="white-space: pre-wrap;">${escaparHtmlNota(nota.content)}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-secondary">${formatarDataNota(nota.updatedAt || nota.createdAt)}</small>
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-sm btn-light border text-info" onclick="editarNota(this)" title="Editar"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-light border text-danger" onclick="excluirNota(this)" title="Excluir"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nota-edicao d-none">
+                        <textarea class="form-control mb-2" rows="3">${escaparHtmlNota(nota.content)}</textarea>
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="cancelarEdicaoNota(this)">Cancelar</button>
+                            <button class="btn btn-sm btn-info text-dark fw-semibold" onclick="salvarEdicaoNota(this)">Salvar</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Adiciona uma nova anotação (não sobrescreve as existentes)
+        function adicionarNota() {
+            const contactId = document.getElementById('notaContactId').value;
+            const texto = document.getElementById('txtNovaNota').value.trim();
+            if (!texto) return;
+
+            const headers = { 'Content-Type': 'application/json' };
+            if (csrfToken) headers[csrfHeader] = csrfToken;
+
+            fetch(`/api/contacts/${contactId}/notes`, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ content: texto })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Falha ao salvar');
+                document.getElementById('txtNovaNota').value = '';
+                carregarNotas(contactId);
+            })
+            .catch(() => alert('Erro ao salvar anotação.'));
+        }
+
+        // Alterna o card da anotação para o modo de edição
+        function editarNota(btn) {
+            const card = btn.closest('[data-nota-id]');
+            card.querySelector('.nota-visualizacao').classList.add('d-none');
+            card.querySelector('.nota-edicao').classList.remove('d-none');
+            card.querySelector('.nota-edicao textarea').focus();
+        }
+
+        function cancelarEdicaoNota(btn) {
+            const card = btn.closest('[data-nota-id]');
+            card.querySelector('.nota-edicao').classList.add('d-none');
+            card.querySelector('.nota-visualizacao').classList.remove('d-none');
+        }
+
+        function salvarEdicaoNota(btn) {
+            const card = btn.closest('[data-nota-id]');
+            const noteId = card.getAttribute('data-nota-id');
+            const texto = card.querySelector('.nota-edicao textarea').value.trim();
+            if (!texto) return;
+
+            const headers = { 'Content-Type': 'application/json' };
+            if (csrfToken) headers[csrfHeader] = csrfToken;
+
+            fetch(`/api/notes/${noteId}`, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify({ content: texto })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Falha ao editar');
+                const contactId = document.getElementById('notaContactId').value;
+                carregarNotas(contactId);
+            })
+            .catch(() => alert('Erro ao editar anotação.'));
+        }
+
+        function excluirNota(btn) {
+            if (!confirm('Excluir esta anotação?')) return;
+
+            const card = btn.closest('[data-nota-id]');
+            const noteId = card.getAttribute('data-nota-id');
+
+            const headers = {};
+            if (csrfToken) headers[csrfHeader] = csrfToken;
+
+            fetch(`/api/notes/${noteId}`, {
+                method: 'DELETE',
+                headers: headers
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Falha ao excluir');
+                card.remove();
+                const container = document.getElementById('listaNotasLead');
+                if (!container.querySelector('[data-nota-id]')) {
+                    container.innerHTML = '<div class="text-center text-secondary py-4 small">Nenhuma anotação registrada ainda.</div>';
+                }
+            })
+            .catch(() => alert('Erro ao excluir anotação.'));
+        }
+
+        // Exclusão do lead lendo o id direto do card, sem depender de link pré-montado pelo backend
+        function excluirLead(btn) {
+            const origem = btn.closest('.card-lead') || btn.closest('tr');
+            const contactId = origem ? origem.getAttribute('data-id') : null;
+
+            if (!contactId) {
+                alert('Não foi possível identificar este lead.');
+                return;
+            }
+            if (confirm('Excluir este contato?')) {
+                window.location.href = `/delete/${contactId}`;
+            }
+        }
+
+        let modalZapInstance = null;
+
+        // Lê os contatos já renderizados no Kanban (evita nova chamada ao backend)
+        function coletarContatosDoCRM() {
+            const cards = document.querySelectorAll('.card-lead');
+            const vistos = new Set();
+            const lista = [];
+            cards.forEach(card => {
+                const id = card.getAttribute('data-id');
+                if (!id || vistos.has(id)) return;
+                vistos.add(id);
+                lista.push({
+                    id: id,
+                    nome: card.getAttribute('data-nome') || 'Sem nome',
+                    telefone: card.getAttribute('data-telefone') || '',
+                    empresa: card.getAttribute('data-empresa') || ''
+                });
+            });
+            return lista;
+        }
+
+        function escaparHtml(texto) {
+            const div = document.createElement('div');
+            div.innerText = texto || '';
+            return div.innerHTML;
+        }
+
+        // Preenche de fato a coluna de contatos do painel de WhatsApp (antes ficava travada em "Carregando...")
+        function renderizarListaContatosOmni(filtro = '') {
+            const container = document.getElementById('listaContatosOmni');
+            if (!container) return;
+
+            const termo = filtro.toLowerCase();
+            const contatos = coletarContatosDoCRM().filter(c =>
+                c.nome.toLowerCase().includes(termo) || (c.telefone || '').toLowerCase().includes(termo)
+            );
+
+            if (contatos.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-4 small">Nenhum contato encontrado.</div>';
+                return;
+            }
+
+            container.innerHTML = contatos.map(c => `
+                <div class="p-2 rounded mb-1 d-flex align-items-center gap-2 contato-omni-item" style="cursor:pointer;" data-id="${c.id}" data-nome="${escaparHtml(c.nome)}" data-telefone="${escaparHtml(c.telefone)}" onclick="selecionarContatoOmni(this)">
+                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:36px; height:36px;">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="flex-fill overflow-hidden">
+                        <div class="fw-semibold text-truncate small">${escaparHtml(c.nome)}</div>
+                        <div class="text-secondary text-truncate" style="font-size: 11px;">${escaparHtml(c.telefone) || 'Sem telefone cadastrado'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selecionarContatoOmni(el) {
+            const nome = el.getAttribute('data-nome');
+            const telefone = el.getAttribute('data-telefone');
+
+            document.getElementById('painelNomeCliente').innerText = nome || 'Cliente';
+            document.getElementById('painelTelefoneCliente').innerText = telefone || 'Não informado';
+            document.getElementById('textoMensagemDireta').value = `Olá ${nome}! Passando para acompanhar o andamento do seu projeto com o DT NEXUS.`;
+
+            const btnEnviar = document.getElementById('btnEnviarDireto');
+            if (telefone && telefone.trim() !== '') {
+                btnEnviar.removeAttribute('disabled');
+            } else {
+                btnEnviar.setAttribute('disabled', 'true');
+            }
+
+            document.querySelectorAll('.contato-omni-item').forEach(item => item.classList.remove('bg-secondary', 'bg-opacity-10'));
+            el.classList.add('bg-secondary', 'bg-opacity-10');
+        }
+
+        // Clique no botão de WhatsApp de um card/linha específico: abre já com o cliente selecionado
+        function abrirWhatsAppCard(btn) {
+            const nome = btn.getAttribute('data-nome');
+            const telefone = btn.getAttribute('data-telefone');
+
+            document.getElementById('painelNomeCliente').innerText = nome || 'Cliente';
+            document.getElementById('painelTelefoneCliente').innerText = telefone || 'Não informado';
+            document.getElementById('textoMensagemDireta').value = `Olá ${nome}! Passando para acompanhar o andamento do seu projeto com o DT NEXUS.`;
+
+            const btnEnviar = document.getElementById('btnEnviarDireto');
+            if (telefone && telefone.trim() !== '') {
+                btnEnviar.removeAttribute('disabled');
+            } else {
+                btnEnviar.setAttribute('disabled', 'true');
+            }
+
+            document.getElementById('filtroContatosZap').value = '';
+            renderizarListaContatosOmni();
+
+            if (!modalZapInstance) {
+                modalZapInstance = new bootstrap.Modal(document.getElementById('modalWhatsappChat'));
+            }
+            modalZapInstance.show();
+        }
+
+        // Clique em "WhatsApp" no menu lateral: abre a caixa flutuante geral, sem cliente pré-selecionado
+        function abrirWhatsAppGeral(e) {
+            if (e) e.preventDefault();
+
+            document.getElementById('painelNomeCliente').innerText = 'Nenhum cliente selecionado';
+            document.getElementById('painelTelefoneCliente').innerText = '--';
+            document.getElementById('textoMensagemDireta').value = '';
+            document.getElementById('btnEnviarDireto').setAttribute('disabled', 'true');
+            document.getElementById('filtroContatosZap').value = '';
+            renderizarListaContatosOmni();
+
+            if (!modalZapInstance) {
+                modalZapInstance = new bootstrap.Modal(document.getElementById('modalWhatsappChat'));
+            }
+            modalZapInstance.show();
+        }
+
+        function inserirMacro(texto) {
+            document.getElementById('textoMensagemDireta').value = texto;
+        }
+
+        function dispararWhatsAppDireto() {
+            const tel = document.getElementById('painelTelefoneCliente').innerText.replace(/\D/g, '');
+            const msg = encodeURIComponent(document.getElementById('textoMensagemDireta').value);
+            if (tel) {
+                window.open(`https://api.whatsapp.com/send?phone=55${tel}&text=${msg}`, '_blank');
+            }
+        }
+
+        let modalPropostaInstance = null;
+        let propostaNumeroAtual = null;
+
+        // Clique no botão do card: abre o compositor já com os dados do cliente, descrição em branco
+        function abrirComposicaoProposta(btn) {
+            const origem = btn.closest('.card-lead') || btn.closest('tr');
+            if (!origem) {
+                alert('Não foi possível identificar os dados deste lead.');
+                return;
+            }
+
+            const valorBruto = origem.getAttribute('data-valor');
+
+            document.getElementById('propostaContactId').value = origem.getAttribute('data-id') || '';
+            document.getElementById('propostaNome').value = origem.getAttribute('data-nome') || '';
+            document.getElementById('propostaEmpresa').value = origem.getAttribute('data-empresa') || '';
+            document.getElementById('propostaTelefone').value = origem.getAttribute('data-telefone') || '';
+            document.getElementById('propostaEmail').value = origem.getAttribute('data-email') || '';
+            document.getElementById('propostaValor').value = valorBruto ? parseFloat(valorBruto) : '';
+            document.getElementById('propostaDescricao').value = '';
+            document.getElementById('propostaStatusGeracao').innerText = '';
+
+            // Trava o envio até o PDF ser gerado com a descrição atual
+            document.getElementById('btnEnviarPropostaZap').setAttribute('disabled', 'true');
+            propostaNumeroAtual = null;
+
+            if (!modalPropostaInstance) {
+                modalPropostaInstance = new bootstrap.Modal(document.getElementById('modalComposicaoProposta'));
+            }
+            modalPropostaInstance.show();
+
+            setTimeout(() => document.getElementById('propostaDescricao').focus(), 400);
+        }
+
+        // Botão "1. Gerar PDF da Proposta": monta o PDF com o que foi digitado no compositor
+        function gerarPDFComposicao() {
+            const nome = document.getElementById('propostaNome').value.trim() || 'Cliente';
+            const empresa = document.getElementById('propostaEmpresa').value.trim();
+            const telefone = document.getElementById('propostaTelefone').value.trim();
+            const valorBruto = document.getElementById('propostaValor').value;
+            const descricao = document.getElementById('propostaDescricao').value.trim();
+            const contactId = document.getElementById('propostaContactId').value || '0';
+
+            if (!descricao) {
+                alert('Escreva a descrição/escopo da proposta antes de gerar o PDF.');
+                document.getElementById('propostaDescricao').focus();
+                return;
+            }
+
+            if (typeof window.jspdf === 'undefined') {
+                alert('Não foi possível carregar o gerador de PDF. Verifique sua conexão e tente novamente.');
+                return;
+            }
+
+            const valorNumero = valorBruto ? parseFloat(valorBruto) : null;
+            const valorFormatado = valorNumero != null && !isNaN(valorNumero)
+                ? valorNumero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                : 'A combinar';
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            propostaNumeroAtual = `${String(new Date().getFullYear())}-${String(contactId).padStart(4, '0')}`;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Cabeçalho
+            doc.setFillColor(2, 132, 199);
+            doc.rect(0, 0, 210, 30, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('DT NEXUS', 15, 18);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Proposta Comercial', 15, 25);
+
+            doc.setTextColor(30, 30, 30);
+            doc.setFontSize(10);
+            doc.text(`Proposta Nº ${propostaNumeroAtual}`, 150, 18);
+            doc.text(`Data: ${hoje}`, 150, 24);
+
+            // Dados do cliente
+            let y = 45;
+            doc.setFontSize(13);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Dados do Cliente', 15, y);
+            doc.setDrawColor(200, 200, 200);
+            doc.line(15, y + 2, 195, y + 2);
+
+            y += 10;
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Nome: ${nome}`, 15, y);
+            y += 7;
+            if (empresa) {
+                doc.text(`Empresa: ${empresa}`, 15, y);
+                y += 7;
+            }
+            if (telefone) {
+                doc.text(`Telefone / WhatsApp: ${telefone}`, 15, y);
+                y += 7;
+            }
+
+            // Descrição / escopo redigido no compositor (com quebra automática de linha)
+            y += 8;
+            doc.setFontSize(13);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Descrição da Proposta', 15, y);
+            doc.line(15, y + 2, 195, y + 2);
+
+            y += 10;
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            const linhasDescricao = doc.splitTextToSize(descricao, 180);
+            doc.text(linhasDescricao, 15, y);
+            y += (linhasDescricao.length * 6) + 10;
+
+            // Evita que o valor total "grude" no rodapé se a descrição for longa
+            if (y > 260) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(16, 163, 74);
+            doc.text(`Valor Total: R$ ${valorFormatado}`, 15, y);
+
+            // Rodapé
+            doc.setTextColor(140, 140, 140);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Proposta gerada pelo DT NEXUS CRM. Válida por 15 dias a partir da data de emissão.', 15, 285);
+
+            const nomeArquivo = `Proposta_${nome.replace(/\s+/g, '_')}_${propostaNumeroAtual}.pdf`;
+            doc.save(nomeArquivo);
+
+            // Libera o botão de envio agora que o PDF já reflete o que foi digitado
+            document.getElementById('btnEnviarPropostaZap').toggleAttribute('disabled', !telefone);
+
+            document.getElementById('propostaStatusGeracao').innerHTML =
+                `<i class="bi bi-check-circle-fill text-success me-1"></i> PDF gerado (${nomeArquivo}). Agora é só enviar.`;
+        }
+
+        // Botão "Enviar via WhatsApp": abre o WhatsApp Web com a mensagem pronta (anexar o PDF já baixado)
+        function enviarPropostaWhatsApp() {
+            if (!propostaNumeroAtual) {
+                alert('Gere o PDF da proposta antes de enviar.');
+                return;
+            }
+            const nome = document.getElementById('propostaNome').value.trim() || 'Cliente';
+            const telefone = document.getElementById('propostaTelefone').value.replace(/\D/g, '');
+            const valorBruto = document.getElementById('propostaValor').value;
+            const valorNumero = valorBruto ? parseFloat(valorBruto) : null;
+            const valorFormatado = valorNumero != null && !isNaN(valorNumero)
+                ? valorNumero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                : 'a combinar';
+
+            if (!telefone) {
+                alert('Este lead não tem telefone cadastrado.');
+                return;
+            }
+
+            const mensagem = encodeURIComponent(
+                `Olá ${nome}! Segue a proposta comercial (${propostaNumeroAtual}) da DT NEXUS, no valor de R$ ${valorFormatado}. ` +
+                `Acabei de baixar o PDF aqui, só anexar na conversa. Qualquer dúvida, estou à disposição!`
+            );
+            window.open(`https://api.whatsapp.com/send?phone=55${telefone}&text=${mensagem}`, '_blank');
+        }
+
+        function filtrarContatosOmni() {
+            const termo = document.getElementById('filtroContatosZap').value;
+            renderizarListaContatosOmni(termo);
+        }
+
+        function toggleNexusAI(e) {
+            if(e) e.preventDefault();
+            document.getElementById('nexus-ai-modal').classList.toggle('show-ai');
+        }
+
+        function enviarMensagemNexusAI() {
+            const input = document.getElementById('nexus-ai-input');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            const container = document.getElementById('nexus-ai-messages');
+            container.innerHTML += `<div class="d-flex justify-content-end mb-2"><div class="p-2.5 rounded-3 text-white bg-info bg-opacity-25 border border-info border-opacity-25 small" style="max-width: 80%;">${msg}</div></div>`;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            setTimeout(() => {
+                container.innerHTML += `<div class="d-flex gap-2 mb-2"><div class="rounded-circle bg-info bg-opacity-10 border border-info border-opacity-25 d-flex align-items-center justify-content-center text-info flex-shrink-0" style="width: 28px; height: 28px; font-size: 11px;"><i class="fa-solid fa-robot"></i></div><div class="p-2.5 rounded-3 text-light bg-dark border border-secondary border-opacity-25 small" style="max-width: 80%;">Comando processado com sucesso no pipeline comercial.</div></div>`;
+                container.scrollTop = container.scrollHeight;
+            }, 800);
+        }
+
+        function toggleInternalChat(e) {
+            if(e) e.preventDefault();
+            document.getElementById('internal-chat-drawer').classList.toggle('show-chat');
+        }
+
+        function enviarMensagemInterna() {
+            const input = document.getElementById('internal-chat-input');
+            const txt = input.value.trim();
+            if(!txt) return;
+
+            const container = document.getElementById('internal-chat-messages');
+            container.innerHTML += `<div class="p-2 rounded bg-element border border-secondary border-opacity-15 text-end"><strong class="text-info d-block">Você:</strong>${txt}</div>`;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+        }
+    </script>
+</body>
+</html>
