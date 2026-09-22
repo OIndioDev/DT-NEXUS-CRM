@@ -612,32 +612,6 @@
             color: var(--text-main);
         }
 
-        /* Estilo da Modal IA Flutuante */
-        #nexus-ai-modal {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 384px;
-            height: 500px;
-            background-color: #0f172a;
-            border: 1px solid rgba(6, 182, 212, 0.4);
-            border-radius: 1rem;
-            box-shadow: 0 25px 50px -12px rgba(8, 145, 178, 0.25);
-            display: flex;
-            flex-direction: column;
-            z-index: 1060;
-            transition: all 0.3s ease;
-            transform: scale(0.95);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #nexus-ai-modal.show-ai {
-            transform: scale(1);
-            opacity: 1;
-            pointer-events: auto;
-        }
-
         /* Estilo do Chat Retrátil de Comunicação Interna */
         #internal-chat-drawer {
             position: fixed;
@@ -735,16 +709,9 @@
                 <span>Visão Geral & Métricas</span>
                 <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
             </a>
-            
-            <a href="#" class="sidebar-item" data-id="nexus-ia" onclick="toggleNexusAI(event)" title="NEXUS IA">
-                <i class="fa-solid fa-microchip text-info"></i>
-                <span class="fw-bold text-info">NEXUS IA</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
-            </a>
 
             <div class="sidebar-section-title">Pipeline Comercial</div>
-            <!-- Quadro Geral agora rola direto até o Kanban (antes apontava pra "/" igual à Visão Geral) -->
-            <a href="#kanbanBoard" class="sidebar-item" data-id="kanban" onclick="irParaKanban(event)" title="Quadro Geral">
+            <a href="/" class="sidebar-item" data-id="kanban" title="Quadro Geral">
                 <i class="bi bi-kanban text-warning"></i>
                 <span>Quadro Geral</span>
                 <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
@@ -875,7 +842,7 @@
                                 </tr>
                             </thead>
                             <tbody id="tabelaDiretorioCorpo">
-                                <tr th:each="c : ${contacts}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                                <tr th:each="c : ${contacts}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                                     <td class="fw-bold" th:text="${c.name}">Nome</td>
                                     <td th:text="${c.company}">Empresa</td>
                                     <td th:text="${c.phone}">Telefone</td>
@@ -892,7 +859,7 @@
                 </div>
             </div>
 
-            <!-- BARRA DE KPIS DO PIPELINE (dados reais vindos do banco) -->
+            <!-- BARRA DE KPIS DO PIPELINE -->
             <div class="row g-3 mb-4">
                 <div class="col-md-3">
                     <div class="kpi-card d-flex align-items-center justify-content-between">
@@ -957,34 +924,83 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Barra de Comando e Inteligência Unificada -->
+            <div class="d-flex flex-column flex-xl-row align-items-center justify-content-between gap-4 p-4 mb-4 rounded-3 border border-info border-opacity-25 shadow-sm" style="background-color: var(--bg-card);">
+                <div class="d-flex align-items-center gap-4 w-100 w-xl-auto overflow-x-auto pb-2 pb-xl-0">
+                    <div class="d-flex align-items-center gap-3 border-end border-secondary border-opacity-25 pe-4 flex-shrink-0">
+                        <div class="p-2 bg-info bg-opacity-10 rounded-2 text-info">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <span class="d-block small text-secondary">Leads Ativos</span>
+                            <span class="fw-bold fs-5">142 <span class="text-success small fw-normal">+12%</span></span>
+                        </div>
+                    </div>
 
-            <!-- BARRA ÚNICA DO KANBAN: busca instantânea + ações (substitui a antiga Barra de Comando e as duas buscas) -->
+                    <div class="d-flex align-items-center gap-3 border-end border-secondary border-opacity-25 pe-4 flex-shrink-0">
+                        <div class="p-2 bg-success bg-opacity-10 rounded-2 text-success">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                        <div>
+                            <span class="d-block small text-secondary">Pipeline Hoje</span>
+                            <span class="fw-bold fs-5">R$ 48.900</span>
+                        </div>
+                    </div>
+
+                    <div class="d-none d-xl-flex align-items-center gap-2 bg-warning bg-opacity-10 border border-warning border-opacity-25 px-3 py-2 rounded-2 text-warning small flex-shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>3 leads sem contato há +48h</span>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 w-100 w-xl-auto justify-content-end">
+                    <button onclick="abrirModalCadastroLead()" class="btn btn-info fw-semibold text-dark px-3 py-2 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-plus small"></i> Novo Lead
+                    </button>
+                    <button onclick="alert('Módulo de Tarefas em breve!')" class="btn btn-outline-secondary px-3 py-2 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-calendar-plus text-info small"></i> Tarefa
+                    </button>
+                    <button class="btn btn-outline-secondary p-2" title="Filtros Avançados" onclick="alert('Filtros avançados em breve!')">
+                        <i class="fa-solid fa-sliders text-info"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- BARRA DE BUSCA RÁPIDA -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="form-card py-3">
+                        <form th:action="@{/}" method="get" class="row g-2 align-items-center">
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0 text-secondary" style="border-color: var(--border-color);">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" name="keyword" class="form-control border-start-0 ps-0" th:value="${keyword}" placeholder="Pesquisar por nome, empresa ou telefone...">
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex gap-2">
+                                <button type="submit" class="btn btn-info fw-semibold text-dark flex-fill">Buscar</button>
+                                <a th:if="${keyword != null and !keyword.isEmpty()}" href="/" class="btn btn-outline-secondary border d-flex align-items-center justify-content-center px-3" title="Limpar Filtro">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BARRA DE BUSCA SUGERIDA ACIMA DO KANBAN -->
             <div class="row mb-3">
                 <div class="col-md-12">
-                    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 p-3 rounded-3 border border-secondary border-opacity-25 shadow-sm" style="background-color: var(--bg-card);">
+                    <div class="d-flex align-items-center justify-content-between bg-card p-3 rounded-3 border border-secondary border-opacity-25 shadow-sm">
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-funnel-fill text-info fs-5"></i>
                             <span class="fw-bold small text-uppercase">Quadro Kanban &bull; Pipeline de Vendas</span>
                         </div>
-                        <div class="d-flex align-items-center gap-2 flex-wrap justify-content-lg-end">
-                            <div class="input-group input-group-sm" style="width: 340px; max-width: 100%;">
-                                <span class="input-group-text bg-transparent text-secondary" style="border-color: var(--border-color);">
-                                    <i class="bi bi-search"></i>
-                                </span>
-                                <input type="text" id="filtroKanbanInstantaneo" class="form-control form-control-sm" placeholder="Buscar por nome, empresa, telefone ou e-mail..." onkeyup="filtrarCardsKanban()">
-                                <button type="button" class="btn btn-outline-secondary" onclick="limparFiltroKanban()" title="Limpar busca">
-                                    <i class="bi bi-x-lg"></i>
-                                </button>
-                            </div>
-                            <button onclick="abrirModalCadastroLead()" class="btn btn-info btn-sm fw-semibold text-dark px-3 d-flex align-items-center gap-2">
-                                <i class="fa-solid fa-plus small"></i> Novo Lead
-                            </button>
-                            <button onclick="alert('Módulo de Tarefas em breve!')" class="btn btn-outline-secondary btn-sm px-3 d-flex align-items-center gap-2">
-                                <i class="fa-solid fa-calendar-plus text-info small"></i> Tarefa
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm" title="Filtros Avançados" onclick="alert('Filtros avançados em breve!')">
-                                <i class="fa-solid fa-sliders text-info"></i>
-                            </button>
+                        <div style="width: 350px;">
+                            <input type="text" id="filtroKanbanInstantaneo" class="form-control form-control-sm" placeholder="Filtrar cards visíveis no quadro..." onkeyup="filtrarCardsKanban()">
                         </div>
                     </div>
                 </div>
@@ -1004,7 +1020,7 @@
                         <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Novo Lead">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Novo Lead'}" class="card-lead card-novo-lead" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Novo Lead'}" class="card-lead card-novo-lead" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
                             <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
                             <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
@@ -1015,7 +1031,7 @@
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
                                 <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
                             </button>
                         </div>
@@ -1033,7 +1049,7 @@
                         <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Em Negociação">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Em Negociação'}" class="card-lead card-em-negociacao" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Em Negociação'}" class="card-lead card-em-negociacao" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
                             <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
                             <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
@@ -1044,7 +1060,7 @@
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
                                 <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
                             </button>
                         </div>
@@ -1062,7 +1078,7 @@
                         <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Proposta Enviada">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Proposta Enviada'}" class="card-lead card-proposta-enviada" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Proposta Enviada'}" class="card-lead card-proposta-enviada" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
                             <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
                             <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
@@ -1073,7 +1089,7 @@
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
                                 <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
                             </button>
                         </div>
@@ -1091,7 +1107,7 @@
                         <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Pós-Venda">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Pós-Venda'}" class="card-lead card-pos-venda" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Pós-Venda'}" class="card-lead card-pos-venda" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
                             <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
                             <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
@@ -1102,7 +1118,7 @@
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
                                 <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
                             </button>
                         </div>
@@ -1120,7 +1136,7 @@
                         <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Fechado">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Fechado'}" class="card-lead card-fechado" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Fechado'}" class="card-lead card-fechado" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
                             <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
                             <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
@@ -1131,7 +1147,7 @@
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
                                 <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
                             </button>
                         </div>
@@ -1149,7 +1165,7 @@
                         <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Cancelado">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Cancelado'}" class="card-lead card-cancelado" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Cancelado'}" class="card-lead card-cancelado" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
                             <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
                             <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
@@ -1160,7 +1176,7 @@
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir a proposta e gerar o PDF (envio por WhatsApp ou pelo seu e-mail)">
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
                                 <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
                             </button>
                         </div>
@@ -1228,7 +1244,27 @@
                         </div>
 
                         <div class="row g-3 mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Tipo de Cliente</label>
+                                <select class="form-select" id="modalLeadCustomerType" th:field="*{customerType}">
+                                    <option value="">Selecione</option>
+                                    <option value="Consumidor Final">Consumidor Final</option>
+                                    <option value="Oficina Parceira">Oficina Parceira</option>
+                                    <option value="Frota">Frota</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Modelo do Veículo</label>
+                                <input type="text" class="form-control" id="modalLeadVehicleModel" th:field="*{vehicleModel}" placeholder="Ex: Honda Civic, Hilux, CG 160">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Placa</label>
+                                <input type="text" class="form-control text-uppercase" id="modalLeadVehiclePlate" th:field="*{vehiclePlate}" placeholder="ABC1D23" maxlength="8">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
                                 <label class="form-label small text-secondary fw-semibold">Estágio do Funil</label>
                                 <select class="form-select" id="modalLeadStatus" th:field="*{statusColumn}">
                                     <option value="Novo Lead">Novo Lead</option>
@@ -1239,7 +1275,26 @@
                                     <option value="Cancelado">Cancelado</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Serviço / Peça de Interesse</label>
+                                <select class="form-select" id="modalLeadServiceInterest" th:field="*{serviceInterest}">
+                                    <option value="">Selecione</option>
+                                    <option value="Alinhamento">Alinhamento</option>
+                                    <option value="Balanceamento">Balanceamento</option>
+                                    <option value="Troca de Pneu">Troca de Pneu</option>
+                                    <option value="Troca de Óleo">Troca de Óleo</option>
+                                    <option value="Freios (Pastilha/Disco)">Freios (Pastilha/Disco)</option>
+                                    <option value="Suspensão">Suspensão</option>
+                                    <option value="Bateria">Bateria</option>
+                                    <option value="Correia Dentada">Correia Dentada</option>
+                                    <option value="Ar-Condicionado">Ar-Condicionado</option>
+                                    <option value="Diagnóstico Elétrico/Injeção">Diagnóstico Elétrico/Injeção</option>
+                                    <option value="Revisão Completa">Revisão Completa</option>
+                                    <option value="Peça Específica">Peça Específica</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
                                 <label class="form-label small text-secondary fw-semibold">E-mail de Contato</label>
                                 <input type="email" class="form-control" id="modalLeadEmail" th:field="*{email}" placeholder="cliente@email.com">
                             </div>
@@ -1435,47 +1490,6 @@
         </div>
     </div>
 
-    <!-- Janela Flutuante do Nexus IA -->
-    <div id="nexus-ai-modal">
-        <!-- Header do Chat -->
-        <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom border-secondary border-opacity-25" style="background-color: rgba(15,23,42,0.8);">
-            <div class="d-flex align-items-center gap-2">
-                <div class="rounded-2 bg-info bg-opacity-10 border border-info border-opacity-25 d-flex align-items-center justify-content-center text-info" style="width: 32px; height: 32px;">
-                    <i class="fa-solid fa-microchip"></i>
-                </div>
-                <div>
-                    <h6 class="text-white mb-0 fw-bold fs-6">NEXUS IA</h6>
-                    <span class="text-info" style="font-size: 10px;"><i class="fa-solid fa-circle text-info me-1" style="font-size: 6px;"></i>Online & Pronto</span>
-                </div>
-            </div>
-            <button onclick="toggleNexusAI(event)" class="btn btn-sm text-secondary hover:text-white border-0">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-
-        <!-- ÁREA ONDE AS MENSAGENS APARECEM -->
-        <div id="nexus-ai-messages" class="flex-grow-1 p-3 overflow-auto text-secondary small d-flex flex-column gap-2" style="height: 380px;">
-            <div class="d-flex gap-2">
-                <div class="rounded-circle bg-info bg-opacity-10 border border-info border-opacity-25 d-flex align-items-center justify-content-center text-info flex-shrink-0" style="width: 28px; height: 28px; font-size: 11px;">
-                    <i class="fa-solid fa-robot"></i>
-                </div>
-                <div class="p-2.5 rounded-3 text-light" style="background-color: #1e293b; font-size: 12px; line-height: 1.4;">
-                    Olá! Analisei o pipeline de hoje. Quer que eu gere um resumo dos leads que estão com propostas pendentes?
-                </div>
-            </div>
-        </div>
-
-        <!-- FORMULÁRIO DE ENVIO -->
-        <div class="p-2 border-top border-secondary border-opacity-25" style="background-color: rgba(15,23,42,0.5);">
-            <form onsubmit="event.preventDefault(); enviarMensagemNexusAI();" class="d-flex align-items-center gap-2 mb-0">
-                <input type="text" id="nexus-ai-input" placeholder="Digite sua instrução para o Nexus IA..." class="form-control form-control-sm bg-dark text-white border-secondary border-opacity-25">
-                <button type="submit" id="nexus-ai-send" class="btn btn-info text-dark btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 32px;">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
-            </form>
-        </div>
-    </div>
-
     <!-- Chat Retrátil de Comunicação Interna -->
     <div id="internal-chat-drawer">
         <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom border-secondary border-opacity-25 bg-element" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
@@ -1550,13 +1564,6 @@
             });
         }
 
-        // Menu "Quadro Geral": rola suavemente até o Kanban, sem recarregar a página
-        function irParaKanban(e) {
-            if (e) e.preventDefault();
-            const board = document.getElementById('kanbanBoard');
-            if (board) board.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
         // Abre/fecha o drawer de Propostas & Orçamentos por cima do dashboard, sem trocar de página
         function toggleDiretorioContatos(event) {
             if (event) {
@@ -1606,6 +1613,10 @@
             document.getElementById('modalLeadJobTitle').value = '';
             document.getElementById('modalLeadCompanySize').value = '';
             document.getElementById('modalLeadEmail').value = '';
+            document.getElementById('modalLeadCustomerType').value = '';
+            document.getElementById('modalLeadVehicleModel').value = '';
+            document.getElementById('modalLeadVehiclePlate').value = '';
+            document.getElementById('modalLeadServiceInterest').value = '';
             document.getElementById('modalLeadStatus').value = 'Novo Lead';
 
             const modalEl = document.getElementById('modalCadastroLead');
@@ -1627,6 +1638,10 @@
             document.getElementById('modalLeadJobTitle').value = origem ? (origem.getAttribute('data-cargo') || '') : '';
             document.getElementById('modalLeadCompanySize').value = origem ? (origem.getAttribute('data-porte') || '') : '';
             document.getElementById('modalLeadEmail').value = origem ? (origem.getAttribute('data-email') || '') : '';
+            document.getElementById('modalLeadCustomerType').value = origem ? (origem.getAttribute('data-tipo-cliente') || '') : '';
+            document.getElementById('modalLeadVehicleModel').value = origem ? (origem.getAttribute('data-veiculo-modelo') || '') : '';
+            document.getElementById('modalLeadVehiclePlate').value = origem ? (origem.getAttribute('data-veiculo-placa') || '') : '';
+            document.getElementById('modalLeadServiceInterest').value = origem ? (origem.getAttribute('data-servico') || '') : '';
 
             const coluna = origem ? origem.closest('.kanban-column') : null;
             document.getElementById('modalLeadStatus').value = coluna ? coluna.getAttribute('data-status') : 'Novo Lead';
@@ -1638,31 +1653,22 @@
             modalCadastroInstance.show();
         }
 
-        // Busca única do Kanban: filtra na hora por nome, empresa, telefone ou e-mail (todos os leads já estão na página)
         function filtrarCardsKanban() {
-            const termo = document.getElementById('filtroKanbanInstantaneo').value.toLowerCase().trim();
+            const termo = document.getElementById('filtroKanbanInstantaneo').value.toLowerCase();
             const cards = document.querySelectorAll('.card-lead');
 
             cards.forEach(card => {
                 const nome = (card.getAttribute('data-nome') || '').toLowerCase();
                 const empresa = (card.getAttribute('data-empresa') || '').toLowerCase();
                 const telefone = (card.getAttribute('data-telefone') || '').toLowerCase();
-                const email = (card.getAttribute('data-email') || '').toLowerCase();
 
-                if (nome.includes(termo) || empresa.includes(termo) || telefone.includes(termo) || email.includes(termo)) {
+                if (nome.includes(termo) || empresa.includes(termo) || telefone.includes(termo)) {
                     card.style.display = '';
                 } else {
                     card.style.display = 'none';
                 }
             });
             atualizarContadores();
-        }
-
-        function limparFiltroKanban() {
-            const input = document.getElementById('filtroKanbanInstantaneo');
-            input.value = '';
-            filtrarCardsKanban();
-            input.focus();
         }
 
         function togglePin(event, btn) {
@@ -2357,27 +2363,6 @@
         function filtrarContatosOmni() {
             const termo = document.getElementById('filtroContatosZap').value;
             renderizarListaContatosOmni(termo);
-        }
-
-        function toggleNexusAI(e) {
-            if(e) e.preventDefault();
-            document.getElementById('nexus-ai-modal').classList.toggle('show-ai');
-        }
-
-        function enviarMensagemNexusAI() {
-            const input = document.getElementById('nexus-ai-input');
-            const msg = input.value.trim();
-            if(!msg) return;
-
-            const container = document.getElementById('nexus-ai-messages');
-            container.innerHTML += `<div class="d-flex justify-content-end mb-2"><div class="p-2.5 rounded-3 text-white bg-info bg-opacity-25 border border-info border-opacity-25 small" style="max-width: 80%;">${msg}</div></div>`;
-            input.value = '';
-            container.scrollTop = container.scrollHeight;
-
-            setTimeout(() => {
-                container.innerHTML += `<div class="d-flex gap-2 mb-2"><div class="rounded-circle bg-info bg-opacity-10 border border-info border-opacity-25 d-flex align-items-center justify-content-center text-info flex-shrink-0" style="width: 28px; height: 28px; font-size: 11px;"><i class="fa-solid fa-robot"></i></div><div class="p-2.5 rounded-3 text-light bg-dark border border-secondary border-opacity-25 small" style="max-width: 80%;">Comando processado com sucesso no pipeline comercial.</div></div>`;
-                container.scrollTop = container.scrollHeight;
-            }, 800);
         }
 
         function toggleInternalChat(e) {

@@ -20,10 +20,3 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  ai:
-    openai:
-      api-key: ssk-proj-BkxkpEYUtUCUdVMnRC8_x-A_PV4yCEzPYl9kAddACNML3UKJiSGqiBy6c5zzVZjBks4cLuMSW-T3BlbkFJ0h8X0btICckGyoYLZvCI-ow56-zrB5n1mRxPE1s6nDCyoK--nak_gje5PhFiXkpAkJU6FNJ6gA
-      chat:
-        options:
-          model: gpt-4o-mini
-          temperature: 0.3

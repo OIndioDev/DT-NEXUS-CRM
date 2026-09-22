@@ -30,6 +30,18 @@ public class Contact {
     @Column(name = "email")
     private String email; // Novo: e-mail de contato do lead, usado na Proposta Comercial
 
+    @Column(name = "customer_type")
+    private String customerType; // Consumidor Final / Oficina Parceira / Frota
+
+    @Column(name = "vehicle_model")
+    private String vehicleModel; // Ex: Honda Civic, Hilux, CG 160
+
+    @Column(name = "vehicle_plate")
+    private String vehiclePlate; // Placa do veículo, ajuda a puxar histórico quando o carro volta
+
+    @Column(name = "service_interest")
+    private String serviceInterest; // Alinhamento, Balanceamento, Troca de Pneu, Troca de Óleo, Freios, Suspensão, Bateria, Correia Dentada, Ar-Condicionado, Diagnóstico Elétrico/Injeção, Revisão Completa, Peça Específica...
+
     public Contact() {}
 
     public Contact(String name, String company, String jobTitle, Double value, String statusColumn, String phone, String companySize) {
@@ -69,4 +81,16 @@ public class Contact {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getCustomerType() { return customerType; }
+    public void setCustomerType(String customerType) { this.customerType = customerType; }
+
+    public String getVehicleModel() { return vehicleModel; }
+    public void setVehicleModel(String vehicleModel) { this.vehicleModel = vehicleModel; }
+
+    public String getVehiclePlate() { return vehiclePlate; }
+    public void setVehiclePlate(String vehiclePlate) { this.vehiclePlate = vehiclePlate; }
+
+    public String getServiceInterest() { return serviceInterest; }
+    public void setServiceInterest(String serviceInterest) { this.serviceInterest = serviceInterest; }
 }
