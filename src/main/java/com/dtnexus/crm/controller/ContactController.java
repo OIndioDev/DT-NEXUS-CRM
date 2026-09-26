@@ -17,18 +17,15 @@ public class ContactController {
     @Autowired
     private ContactService contactService;
 
-    // Lista fixa de colunas do Kanban (6 colunas, iguais às do index.html)
+    // Status operacionais do patio e da oficina.
     private final List<ColumnDto> kanbanColumns = Arrays.asList(
-        new ColumnDto(1L, "Novo Lead"),
-        new ColumnDto(2L, "Em Negociação"),
-        new ColumnDto(3L, "Proposta Enviada"),
-        new ColumnDto(4L, "Pós-Venda"),
-        new ColumnDto(5L, "Fechado"),
-        new ColumnDto(6L, "Cancelado")
+        new ColumnDto(1L, "Recepção / Diagnóstico"),
+        new ColumnDto(2L, "Aguardando Peças"),
+        new ColumnDto(3L, "Na Oficina / Elevador"),
+        new ColumnDto(4L, "Teste de Rodagem"),
+        new ColumnDto(5L, "Pronto / Lavagem"),
+        new ColumnDto(6L, "Entregue / Pago")
     );
-
-    // NOTA: os endpoints de anotações (/api/contacts/{id}/notes e /api/notes/{id})
-    // agora vivem exclusivamente no NoteController, persistidos no banco.
 
     // 1. Página Principal (com suporte a filtro de busca)
     @GetMapping("/")
@@ -45,22 +42,12 @@ public class ContactController {
                         return BigDecimal.ZERO;
                     }
                 })
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        long totalLeads = contacts.size();
-
-        long fechados = contacts.stream()
-                .filter(c -> "Fechado".equalsIgnoreCase(c.getStatusColumn()))
-                .count();
-
-        double taxaConversao = totalLeads > 0 ? ((double) fechados / totalLeads) * 100 : 0.0;
+                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b != null ? b : BigDecimal.ZERO)); // Corrigido Null Safety
 
         model.addAttribute("contacts", contacts);
         model.addAttribute("contact", new Contact());
         model.addAttribute("kanbanColumns", kanbanColumns);
-        model.addAttribute("valorFunil", valorFunil);
-        model.addAttribute("totalLeads", totalLeads);
-        model.addAttribute("taxaConversao", String.format("%.1f", taxaConversao).replace(",", "."));
+        addOperationalMetrics(model, contacts, valorFunil);
         model.addAttribute("keyword", keyword);
 
         return "index";
@@ -69,7 +56,6 @@ public class ContactController {
     // 2. Salvar ou Atualizar Contato
     @PostMapping("/save")
     public String saveContact(@ModelAttribute Contact contact) {
-        // Se for uma edição (ID preenchido), recupera o contato atual do banco para não perder o status do Kanban
         if (contact.getId() != null) {
             contactService.findById(contact.getId()).ifPresent(existing -> {
                 if (contact.getStatusColumn() == null || contact.getStatusColumn().trim().isEmpty()) {
@@ -77,9 +63,8 @@ public class ContactController {
                 }
             });
         } else {
-            // Se for novo contato e não tiver status definido, joga para a primeira coluna padrão
             if (contact.getStatusColumn() == null || contact.getStatusColumn().trim().isEmpty()) {
-                contact.setStatusColumn("Novo Lead");
+                contact.setStatusColumn("Recepção / Diagnóstico");
             }
         }
 
@@ -91,7 +76,6 @@ public class ContactController {
     @GetMapping("/edit/{id}")
     public String editContact(@PathVariable Long id, Model model) {
         Contact contact = contactService.findById(id).orElse(new Contact());
-
         List<Contact> contacts = contactService.findAll();
 
         BigDecimal valorFunil = contacts.stream()
@@ -102,20 +86,34 @@ public class ContactController {
                         return BigDecimal.ZERO;
                     }
                 })
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        long totalLeads = contacts.size();
-        long fechados = contacts.stream().filter(c -> "Fechado".equalsIgnoreCase(c.getStatusColumn())).count();
-        double taxaConversao = totalLeads > 0 ? ((double) fechados / totalLeads) * 100 : 0.0;
+                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b != null ? b : BigDecimal.ZERO)); // Corrigido Null Safety
 
         model.addAttribute("contact", contact);
         model.addAttribute("contacts", contacts);
         model.addAttribute("kanbanColumns", kanbanColumns);
-        model.addAttribute("valorFunil", valorFunil);
-        model.addAttribute("totalLeads", totalLeads);
-        model.addAttribute("taxaConversao", String.format("%.1f", taxaConversao).replace(",", "."));
+        addOperationalMetrics(model, contacts, valorFunil);
 
         return "index";
+    }
+
+    private void addOperationalMetrics(Model model, List<Contact> contacts, BigDecimal totalValue) {
+        BigDecimal serviceRevenue = contacts.stream()
+            .map(contact -> contact.getServiceValue() == null ? BigDecimal.ZERO : BigDecimal.valueOf(contact.getServiceValue()))
+            .reduce(BigDecimal.ZERO, (a, b) -> a.add(b != null ? b : BigDecimal.ZERO)); // Corrigido Null Safety
+            
+        BigDecimal partsRevenue = contacts.stream()
+            .map(contact -> contact.getPartsValue() == null ? BigDecimal.ZERO : BigDecimal.valueOf(contact.getPartsValue()))
+            .reduce(BigDecimal.ZERO, (a, b) -> a.add(b != null ? b : BigDecimal.ZERO)); // Corrigido Null Safety
+            
+        int activeVehicles = contacts.size();
+        BigDecimal averageTicket = activeVehicles == 0
+            ? BigDecimal.ZERO
+            : totalValue.divide(BigDecimal.valueOf(activeVehicles), 2, java.math.RoundingMode.HALF_UP);
+
+        model.addAttribute("activeVehicles", activeVehicles);
+        model.addAttribute("serviceRevenue", serviceRevenue);
+        model.addAttribute("partsRevenue", partsRevenue);
+        model.addAttribute("averageTicket", averageTicket);
     }
 
     // 4. Deletar Contato
@@ -147,32 +145,68 @@ public class ContactController {
     @ResponseBody
     public ResponseEntity<?> updateContactStatusPatch(
             @PathVariable Long id,
-            @RequestBody Map<String, String> body) {
+            @RequestBody Map<String, Object> body) {
         try {
             Contact contact = contactService.findById(id).orElse(null);
             if (contact != null) {
-                String novoStatus = body.get("statusColumn");
+                String novoStatus = textValue(body.get("statusColumn"));
                 if (novoStatus != null && !novoStatus.trim().isEmpty()) {
                     contact.setStatusColumn(novoStatus);
-                    contactService.save(contact);
-                    return ResponseEntity.ok(contact);
                 }
-                return ResponseEntity.badRequest().body("O campo 'statusColumn' é obrigatório no corpo da requisição.");
+                if (body.containsKey("name")) contact.setName(textValue(body.get("name")));
+                if (body.containsKey("vehicleModel")) contact.setVehicleModel(textValue(body.get("vehicleModel")));
+                if (body.containsKey("vehiclePlate")) contact.setVehiclePlate(textValue(body.get("vehiclePlate")));
+                if (body.containsKey("vehicleChassis")) contact.setVehicleChassis(textValue(body.get("vehicleChassis")));
+                if (body.containsKey("vehicleKm")) contact.setVehicleKm(integerValue(body.get("vehicleKm")));
+                if (body.containsKey("vehicleInspectionExternal")) contact.setVehicleInspectionExternal(textValue(body.get("vehicleInspectionExternal")));
+                if (body.containsKey("vehicleInspectionInternal")) contact.setVehicleInspectionInternal(textValue(body.get("vehicleInspectionInternal")));
+                if (body.containsKey("vehicleFluidStatus")) contact.setVehicleFluidStatus(textValue(body.get("vehicleFluidStatus")));
+                if (body.containsKey("vehicleFuelLevel")) contact.setVehicleFuelLevel(textValue(body.get("vehicleFuelLevel")));
+                if (body.containsKey("vehicleSignatureAccepted")) contact.setVehicleSignatureAccepted(booleanValue(body.get("vehicleSignatureAccepted")));
+                if (body.containsKey("serviceInterest")) contact.setServiceInterest(textValue(body.get("serviceInterest")));
+                if (body.containsKey("serviceValue")) contact.setServiceValue(doubleValue(body.get("serviceValue")));
+                
+                contactService.save(contact);
+                return ResponseEntity.ok().body(contact);
             }
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body("Contato não encontrado.");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Erro ao processar PATCH: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Erro ao atualizar dados: " + e.getMessage());
         }
     }
 
-    // 6.1 Endpoint REST GET para retornar todos os contatos em JSON (Usado pelo n8n - Relatório Diário do Pipeline)
-    @GetMapping("/api/contacts")
-    @ResponseBody
-    public List<Contact> getAllContacts() {
-        return contactService.findAll();
+    // Métodos utilitários de conversão segura para tratar os dados vindos do n8n/JSON
+    private String textValue(Object obj) {
+        return obj == null ? null : obj.toString();
     }
 
-    // Classe auxiliar interna para representar as colunas do Kanban
+    private Integer integerValue(Object obj) {
+        if (obj == null) return null;
+        if (obj instanceof Number) return ((Number) obj).intValue();
+        try {
+            return Integer.parseInt(obj.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Double doubleValue(Object obj) {
+        if (obj == null) return null;
+        if (obj instanceof Number) return ((Number) obj).doubleValue();
+        try {
+            return Double.parseDouble(obj.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Boolean booleanValue(Object obj) {
+        if (obj == null) return null;
+        if (obj instanceof Boolean) return (Boolean) obj;
+        return Boolean.parseBoolean(obj.toString());
+    }
+
+    // DTO interno para mapeamento das colunas do Kanban
     public static class ColumnDto {
         private Long id;
         private String name;

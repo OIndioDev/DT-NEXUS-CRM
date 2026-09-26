@@ -1,0 +1,13 @@
+.git
+.github
+.azure
+.idea
+.vscode
+target
+data
+*.iml
+Dockerfile*
+docker-compose*.yml
+docker-compose*.yaml
+README*
+HELP.md

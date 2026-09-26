@@ -6,16 +6,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "leads")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Lead {
 
     @Id
@@ -23,12 +19,16 @@ public class Lead {
     private Long id;
 
     @Column(name = "tenant_id", nullable = false)
+    @NotBlank(message = "tenantId é obrigatório")
     private String tenantId;
 
     @Column(nullable = false)
+    @NotBlank(message = "name é obrigatório")
     private String name;
 
     @Column(nullable = false)
+    @NotBlank(message = "email é obrigatório")
+    @Email(message = "email deve ser válido")
     private String email;
 
     private String phone;
@@ -54,13 +54,59 @@ public class Lead {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Getters/setters manuais como reforço caso o Lombok falhe no Eclipse
+    // Construtor Padrão Necessário para o Hibernate
+    public Lead() {
+    }
+
+    // Construtor Completo
+    public Lead(Long id, String tenantId, String name, String email, String phone, String companyName, 
+                Double dealValue, String statusColumn, String sentimentScore, String nextBestAction, 
+                String aiSummary, LocalDateTime createdAt) {
+        this.id = id;
+        this.tenantId = tenantId;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.companyName = companyName;
+        this.dealValue = dealValue;
+        this.statusColumn = statusColumn;
+        this.sentimentScore = sentimentScore;
+        this.nextBestAction = nextBestAction;
+        this.aiSummary = aiSummary;
+        this.createdAt = createdAt;
+    }
+
+    // GETTERS E SETTERS EXPLÍCITOS (Garante compatibilidade total com o VS Code e LeadController)
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPhone() {
@@ -71,12 +117,59 @@ public class Lead {
         this.phone = phone;
     }
 
-    // Antes estava vazio (TODO) e por isso a análise de sentimento da IA nunca era salva
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public Double getDealValue() {
+        return dealValue;
+    }
+
+    public void setDealValue(Double dealValue) {
+        this.dealValue = dealValue;
+    }
+
+    public String getStatusColumn() {
+        return statusColumn;
+    }
+
+    public void setStatusColumn(String statusColumn) {
+        this.statusColumn = statusColumn;
+    }
+
     public String getSentimentScore() {
         return sentimentScore;
     }
 
     public void setSentimentScore(String sentimentScore) {
         this.sentimentScore = sentimentScore;
+    }
+
+    public String getNextBestAction() {
+        return nextBestAction;
+    }
+
+    public void setNextBestAction(String nextBestAction) {
+        this.nextBestAction = nextBestAction;
+    }
+
+    public String getAiSummary() {
+        return aiSummary;
+    }
+
+    public void setAiSummary(String aiSummary) {
+        this.aiSummary = aiSummary;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -1,0 +1,24 @@
+:root {
+    --nexus-focus: #0284c7;
+}
+
+:focus-visible {
+    outline: 3px solid var(--nexus-focus);
+    outline-offset: 2px;
+}
+
+[aria-hidden="true"] {
+    pointer-events: none;
+}
+
+.service-catalog-table input:invalid {
+    border-color: #dc3545;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

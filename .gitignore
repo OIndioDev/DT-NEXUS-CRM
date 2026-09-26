@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+   
+### DT NEXUS - arquivos sensiveis e logs ###
+src/main/resources/application.properties
+startup.log
+.azure/

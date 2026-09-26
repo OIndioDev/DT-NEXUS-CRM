@@ -3,7 +3,6 @@ package com.dtnexus.crm.controller;
 import com.dtnexus.crm.model.Contact;
 import com.dtnexus.crm.repository.ContactRepository;
 import com.dtnexus.crm.service.WhatsAppService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,11 +12,13 @@ import java.util.List;
 @RequestMapping("/api/whatsapp")
 public class WhatsAppController {
 
-    @Autowired
-    private ContactRepository contactRepository;
+    private final ContactRepository contactRepository;
+    private final WhatsAppService whatsAppService;
 
-    @Autowired
-    private WhatsAppService whatsAppService;
+    public WhatsAppController(ContactRepository contactRepository, WhatsAppService whatsAppService) {
+        this.contactRepository = contactRepository;
+        this.whatsAppService = whatsAppService;
+    }
 
     // Endpoint para buscar o QR Code da sessão do WhatsApp
     @GetMapping("/qrcode")

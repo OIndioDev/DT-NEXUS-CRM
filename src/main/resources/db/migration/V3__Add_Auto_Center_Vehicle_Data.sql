@@ -1,0 +1,3 @@
+ALTER TABLE contacts
+    ADD COLUMN IF NOT EXISTS vehicle_chassis VARCHAR(17) NULL,
+    ADD COLUMN IF NOT EXISTS vehicle_km INT NULL;

@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/nexus-styles.css}">
     <!-- jsPDF (geração da Proposta Comercial em PDF, direto no navegador) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Tailwind CSS -->
@@ -46,7 +47,6 @@
             --card-lead-bg: #1e293b;
             --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
             --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-            --pro-banner-bg: linear-gradient(135deg, #111827 0%, #1f2937 100%);
             --badge-pro-bg: rgba(6, 182, 212, 0.15);
             --badge-pro-text: #22d3ee;
             --badge-pro-border: rgba(6, 182, 212, 0.25);
@@ -66,7 +66,6 @@
             --card-lead-bg: #ffffff;
             --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
             --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.12);
-            --pro-banner-bg: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%);
             --badge-pro-bg: rgba(2, 132, 199, 0.1);
             --badge-pro-text: #0369a1;
             --badge-pro-border: rgba(2, 132, 199, 0.3);
@@ -158,6 +157,7 @@
             letter-spacing: 1px;
             background: linear-gradient(90deg, var(--text-main), var(--neon-blue));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             white-space: nowrap;
         }
@@ -169,6 +169,7 @@
             letter-spacing: 1.5px;
             background: linear-gradient(90deg, var(--neon-blue), #38bdf8);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-left: 4px;
             padding: 2px 6px;
@@ -194,6 +195,81 @@
             background: var(--border-color);
             border-radius: 4px;
         }
+
+        .zap-tracker {
+            flex: 1;
+            min-height: 260px;
+            margin: 16px 4px 4px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-element);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .zap-tracker-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .zap-tracker-trigger {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0;
+            border: 0;
+            color: inherit;
+            background: transparent;
+            font: inherit;
+            text-transform: inherit;
+            cursor: pointer;
+        }
+
+        .zap-tracker-trigger:hover { color: var(--neon-blue); }
+        .zap-connection-state { color: #f59e0b; font-size: 0.6rem; text-transform: none; }
+
+        .zap-tracker-header i { color: #22c55e; }
+
+        .zap-tracker-live {
+            min-width: 20px;
+            padding: 2px 6px;
+            border-radius: 999px;
+            color: #fff;
+            background: #16a34a;
+            text-align: center;
+            font-size: 0.65rem;
+        }
+
+        .zap-tracker-list { display: grid; align-content: start; gap: 8px; overflow-y: auto; }
+
+        .zap-message {
+            padding: 9px;
+            border-left: 3px solid #22c55e;
+            border-radius: 6px;
+            background: var(--bg-card);
+        }
+
+        .zap-message strong,
+        .zap-message small,
+        .zap-message p { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .zap-message strong { color: var(--text-main); font-size: 0.72rem; }
+        .zap-message small { margin-top: 2px; color: var(--text-secondary); font-size: 0.62rem; }
+        .zap-message p { margin: 6px 0 0; color: var(--text-secondary); font-size: 0.68rem; }
+
+        .zap-empty { padding: 24px 8px; color: var(--text-secondary); font-size: 0.72rem; text-align: center; }
+
+        .zap-qr-modal .modal-content { border: 1px solid var(--border-color); background: rgba(15, 23, 42, 0.82); backdrop-filter: blur(18px); }
+        .zap-qr { width: 190px; height: 190px; margin: 14px auto; border: 10px solid #fff; background: repeating-conic-gradient(#111 0 25%, #fff 0 50%) 0 0 / 22px 22px; box-shadow: 0 0 0 1px rgba(255,255,255,.2), 0 14px 40px rgba(0,0,0,.35); }
+        .zap-qr-caption { color: var(--text-secondary); font-size: 0.8rem; text-align: center; }
+
+        body.sidebar-collapsed .zap-tracker { display: none; }
 
         .sidebar-section-title {
             font-size: 10.5px;
@@ -297,6 +373,60 @@
             box-shadow: var(--card-shadow);
         }
 
+        #bannerAlertaTrial {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 10px 18px;
+            color: var(--text-main);
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            font-size: 0.82rem;
+        }
+
+        #bannerAlertaTrial.is-visible { display: flex; }
+        #bannerAlertaTrial strong { color: #f59e0b; }
+        .trial-alert-action { flex: 0 0 auto; border: 1px solid rgba(245, 158, 11, 0.55); color: #b45309; background: transparent; }
+        :root[data-theme="dark"] .trial-alert-action { color: #fbbf24; }
+        .trial-alert-action:hover { color: #111827; background: #f59e0b; }
+
+        #screenLockSaas {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(11, 15, 25, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        #screenLockSaas.is-visible { display: flex; }
+        #screenLockSaas.is-leaving { opacity: 0; pointer-events: none; transition: opacity .45s ease; }
+        .saas-lock-card { width: min(100%, 560px); padding: 30px; border: 1px solid var(--neon-blue); border-radius: 16px; color: var(--text-main); background: rgba(15, 23, 42, 0.94); box-shadow: 0 24px 90px rgba(0,0,0,.5); }
+        .saas-lock-title { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 800; }
+        .saas-lock-title i { color: var(--neon-blue); font-size: 1.4rem; }
+        .saas-lock-copy { color: #cbd5e1; font-size: .86rem; line-height: 1.65; }
+        .saas-price { color: var(--neon-blue); font-size: 1.35rem; font-weight: 800; }
+        .saas-plan-label { margin-top: 18px; color: #22d3ee; font-size: .78rem; font-weight: 800; letter-spacing: .04em; }
+        .saas-includes { display: grid; gap: 7px; margin: 8px 0 0; padding: 0; color: #cbd5e1; font-size: .78rem; list-style: none; }
+        .checkout-tabs { display: flex; gap: 8px; margin: 20px 0 16px; }
+        .checkout-tabs button { flex: 1; border: 1px solid #334155; border-radius: 8px; padding: 9px; color: #cbd5e1; background: transparent; }
+        .checkout-tabs button.active { border-color: var(--neon-blue); color: #fff; background: rgba(56, 189, 248, .14); }
+        .checkout-pane { display: none; min-height: 130px; }
+        .checkout-pane.active { display: block; }
+        .checkout-qr { width: 116px; height: 116px; margin: 0 auto 10px; border: 7px solid #fff; background: repeating-conic-gradient(#111 0 25%, #fff 0 50%) 0 0 / 16px 16px; }
+        .checkout-key { color: #94a3b8; font-size: .72rem; word-break: break-all; }
+
+        @media (max-width: 700px) {
+            #bannerAlertaTrial { align-items: flex-start; flex-direction: column; }
+            .saas-lock-card { padding: 22px; }
+        }
+
         .theme-switch-wrapper {
             display: flex;
             align-items: center;
@@ -357,38 +487,6 @@
             font-size: 11px;
         }
 
-        .kpi-card {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--card-shadow);
-            height: 100%;
-            transition: transform 0.2s ease, background-color 0.3s ease;
-        }
-
-        .kpi-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--neon-blue);
-        }
-
-        .kpi-label {
-            color: var(--text-secondary) !important;
-            font-size: 11.5px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .kpi-icon-wrapper {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.35rem;
-        }
-
         .bg-light-success-soft {
             background-color: rgba(16, 185, 129, 0.15);
             color: #34d399;
@@ -409,29 +507,6 @@
             color: #22d3ee;
         }
 
-        .pro-banner {
-            background: var(--pro-banner-bg);
-            border-radius: 12px;
-            color: var(--text-main);
-            padding: 20px 24px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid var(--border-color);
-            border-left: 5px solid #0284c7;
-            transition: background 0.3s ease;
-        }
-
-        .btn-pro-sober {
-            background-color: #0369a1;
-            color: #ffffff;
-            border: 1px solid #0284c7;
-            transition: background-color 0.2s;
-        }
-
-        .btn-pro-sober:hover {
-            background-color: #0284c7;
-            color: #ffffff;
-        }
-
         .form-card {
             background: var(--bg-card);
             border-radius: 12px;
@@ -439,6 +514,71 @@
             box-shadow: var(--card-shadow);
             border: 1px solid var(--border-color);
             transition: background-color 0.3s ease;
+        }
+
+        .operations-strip {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--border-color);
+            box-shadow: var(--card-shadow);
+        }
+
+        .operation-metric {
+            min-width: 0;
+            padding: 16px 18px;
+            background: var(--bg-card);
+        }
+
+        .operation-metric span,
+        .operation-metric strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .operation-metric span { color: var(--text-secondary); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+        .operation-metric strong { margin-top: 6px; color: var(--text-main); font-size: 1.15rem; }
+        .operation-metric-highlight strong { color: var(--neon-blue); }
+
+        .vehicle-detail {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 5px;
+            color: var(--text-secondary);
+            font-size: 0.72rem;
+        }
+
+        .vehicle-detail i { width: 13px; color: var(--neon-blue); text-align: center; }
+
+        .os-summary {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--border-color);
+        }
+
+        .os-summary div { padding: 12px; background: var(--bg-element); }
+        .os-summary span, .os-summary strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .os-summary span { color: var(--text-secondary); font-size: 0.68rem; text-transform: uppercase; }
+        .os-summary strong { margin-top: 3px; font-size: 0.86rem; }
+
+        .os-tabs { display: flex; gap: 4px; overflow-x: auto; margin-bottom: 18px; border-bottom: 1px solid var(--border-color); }
+        .os-tabs button { flex: 0 0 auto; padding: 10px 12px; border: 0; border-bottom: 2px solid transparent; color: var(--text-secondary); background: transparent; font-size: 0.78rem; font-weight: 700; }
+        .os-tabs button.active, .os-tabs button:hover { border-bottom-color: var(--neon-blue); color: var(--neon-blue); }
+        .os-pane { display: none; min-height: 250px; }
+        .os-pane.active { display: block; }
+        .os-table { color: var(--text-main); }
+        .os-table th { color: var(--text-secondary); font-size: 0.7rem; text-transform: uppercase; }
+        .os-empty-state { padding: 36px 18px; border: 1px dashed var(--border-color); color: var(--text-secondary); text-align: center; }
+        .os-invoice-note { display: flex; gap: 10px; align-items: center; padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-secondary); font-size: 0.82rem; }
+        .os-invoice-note i { color: #22c55e; font-size: 1.25rem; }
+
+        @media (max-width: 900px) {
+            .operations-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .os-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
 
         .form-control,
@@ -501,27 +641,27 @@
             background-color: rgba(100, 100, 100, 0.08);
         }
 
-        .kanban-column[data-status="Novo Lead"] {
+            .kanban-column[data-status="Recepção / Diagnóstico"] {
             border-top: 4px solid #3b82f6;
         }
 
-        .kanban-column[data-status="Em Negociação"] {
+            .kanban-column[data-status="Aguardando Peças"] {
             border-top: 4px solid #f59e0b;
         }
 
-        .kanban-column[data-status="Proposta Enviada"] {
+            .kanban-column[data-status="Na Oficina / Elevador"] {
             border-top: 4px solid #8b5cf6;
         }
 
-        .kanban-column[data-status="Pós-Venda"] {
+            .kanban-column[data-status="Teste de Rodagem"] {
             border-top: 4px solid #06b6d4;
         }
 
-        .kanban-column[data-status="Fechado"] {
+            .kanban-column[data-status="Pronto / Lavagem"] {
             border-top: 4px solid #10b981;
         }
 
-        .kanban-column[data-status="Cancelado"] {
+            .kanban-column[data-status="Entregue / Pago"] {
             border-top: 4px solid #ef4444;
         }
 
@@ -696,84 +836,71 @@
         </div>
 
         <div class="sidebar-menu" id="sidebarMenu">
-            <!-- Seção Dinâmica de Favoritos (Pins) -->
-            <div id="favoritesSection" style="display: none;">
-                <div class="sidebar-section-title text-info"><i class="bi bi-pin-angle-fill me-1"></i> Favoritos</div>
-                <div id="favoritesList" class="d-flex flex-column gap-1 mb-2"></div>
-                <hr class="border-secondary opacity-25 my-2">
-            </div>
-
-            <div class="sidebar-section-title">Core & Inteligência</div>
-            <a href="/" class="sidebar-item active" data-id="dashboard" title="Visão Geral & Métricas">
-                <i class="bi bi-speedometer2 text-primary"></i>
-                <span>Visão Geral & Métricas</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+            <div class="sidebar-section-title">Operação</div>
+            <a href="#" class="sidebar-item" data-id="entrada-veiculo" onclick="abrirModalCadastroLead(); return false;" title="Entrada de Veículo">
+                <i class="bi bi-plus-square-fill text-info"></i>
+                <span>Entrada de Veículo</span>
             </a>
-
-            <div class="sidebar-section-title">Pipeline Comercial</div>
-            <a href="/" class="sidebar-item" data-id="kanban" title="Quadro Geral">
+            <a href="#kanbanBoard" class="sidebar-item active" data-id="kanban" onclick="mostrarVisaoKanban(); return false;" title="Quadro do Pátio">
                 <i class="bi bi-kanban text-warning"></i>
-                <span>Quadro Geral</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
+                <span>Quadro do Pátio (Kanban)</span>
+            </a>
+            <a href="#visaoPlanilhaOS" class="sidebar-item" data-id="ordens-servico" onclick="mostrarVisaoOS('planilha'); return false;" title="Planilha de Ordens de Serviço">
+                <i class="bi bi-table text-success"></i>
+                <span>Planilha de Ordens de Serviço (O.S.)</span>
+            </a>
+            <a href="/api/service-catalog" class="sidebar-item" data-id="catalogo-servicos" title="Catálogo de Serviços">
+                <i class="bi bi-tools text-primary"></i>
+                <span>Catálogo de Serviços</span>
             </a>
 
-            <a href="#" class="sidebar-item" data-id="propostas" onclick="toggleDiretorioContatos(event)" title="Propostas & Orçamentos">
-                <i class="bi bi-file-earmark-text-fill text-primary"></i>
-                <span>Propostas & Orçamentos</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
-            </a>
-
-            <div class="sidebar-section-title">Atendimento Omnichannel</div>
-            <a href="#" class="sidebar-item" data-id="whatsapp" onclick="abrirWhatsAppGeral(event)" title="WhatsApp">
-                <i class="bi bi-whatsapp text-success"></i>
-                <span>WhatsApp</span>
-                <span class="sidebar-badge">3</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
-            </a>
-
-            <div class="sidebar-section-title">Outros Módulos</div>
-            <a href="#" class="sidebar-item" data-id="kanban-grupos" onclick="alert('Módulo Equipes em breve!')" title="Equipes">
-                <i class="bi bi-layers-half text-info"></i>
-                <span>Equipes</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
-            </a>
-            <a href="#" class="sidebar-item" data-id="kanban-filas" onclick="alert('Módulo Fila de Espera em breve!')" title="Fila de Espera">
-                <i class="bi bi-reception-4 text-secondary"></i>
-                <span>Fila de Espera</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
-            </a>
-
-            <div class="sidebar-section-title">Utilitários & Ferramentas</div>
-            <a href="#" class="sidebar-item" data-id="tags" onclick="alert('Etiquetas & Categorias em breve!')" title="Etiquetas & Categorias">
-                <i class="bi bi-tag-fill text-danger"></i>
-                <span>Etiquetas & Categorias</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
-            </a>
-            <a href="#" class="sidebar-item" data-id="respostas" onclick="alert('Macros & Respostas em breve!')" title="Macros & Respostas">
-                <i class="bi bi-lightning-fill text-info"></i>
-                <span>Macros & Respostas</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
-            </a>
-            <a href="#" class="sidebar-item" data-id="tarefas" onclick="alert('Gestão de Atividades em breve!')" title="Gestão de Atividades">
-                <i class="bi bi-check2-all text-warning"></i>
-                <span>Gestão de Atividades</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
-            </a>
-            <a href="#" class="sidebar-item" data-id="agendamentos" onclick="alert('Agenda Executiva em breve!')" title="Agenda Executiva">
-                <i class="bi bi-calendar-check-fill text-success"></i>
-                <span>Agenda Executiva</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
-            </a>
-            
-            <!-- Comunicação Interna ajustada com o chat retrátil -->
-            <a href="#" class="sidebar-item" data-id="comunicacao-interna" onclick="toggleInternalChat(event)" title="Comunicação Interna">
-                <i class="bi bi-headset text-info"></i>
-                <span>Comunicação Interna</span>
-                <span class="sidebar-badge">1</span>
-                <button class="pin-btn" onclick="togglePin(event, this)" title="Fixar nos Favoritos"><i class="bi bi-pin"></i></button>
-            </a>
+            <section class="zap-tracker" aria-labelledby="zapTrackerTitle">
+                <div class="zap-tracker-header">
+                    <button type="button" class="zap-tracker-trigger" id="zapTrackerTitle" onclick="abrirSincronizacaoZap()" title="Abrir sincronização Nexus Zap">
+                        <i class="bi bi-whatsapp me-1"></i>Nexus Zap Tracker
+                    </button>
+                    <span class="zap-tracker-live">3</span>
+                </div>
+                <div class="zap-connection-state mb-2" id="zapConnectionState">Desconectado • tocar para parear</div>
+                <div class="zap-tracker-list">
+                    <article class="zap-message">
+                        <strong>Mariana Costa</strong>
+                        <small>Honda Civic • ABC1D23</small>
+                        <p>“O carro já pode ser retirado?”</p>
+                    </article>
+                    <article class="zap-message">
+                        <strong>Rafael Souza</strong>
+                        <small>Toyota Corolla • RST4E56</small>
+                        <p>“Pode verificar o orçamento dos freios?”</p>
+                    </article>
+                    <article class="zap-message">
+                        <strong>Oficina Parceira Norte</strong>
+                        <small>Ford Ranger • KLM7N89</small>
+                        <p>“Enviei as fotos da avaria.”</p>
+                    </article>
+                </div>
+            </section>
         </div>
     </aside>
+
+    <div class="modal fade zap-qr-modal" id="modalSincronizacaoZap" tabindex="-1" aria-labelledby="modalSincronizacaoZapLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header border-bottom border-secondary border-opacity-25">
+                    <div>
+                        <span class="text-success small text-uppercase fw-bold">Nexus Zap</span>
+                        <h2 class="modal-title h5 fw-bold mb-0" id="modalSincronizacaoZapLabel">Sincronização Nexus Zap</h2>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <div class="zap-qr" aria-label="QR Code de pareamento"></div>
+                    <p class="zap-qr-caption mb-0">Aponte a câmera do aplicativo autorizado para parear este Auto Center.</p>
+                    <button type="button" class="btn btn-success mt-3" onclick="ativarSincronizacaoZap()"><i class="bi bi-check2-circle me-1"></i>Confirmar pareamento</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- CONTEÚDO PRINCIPAL -->
     <div class="main-content">
@@ -796,7 +923,10 @@
                     <i class="bi bi-moon-stars-fill text-info fs-6"></i>
                 </div>
 
-                <span class="badge badge-pro-custom fw-bold px-3 py-2 rounded-pill shadow-sm">PLAN: NEXUS PRO ACTIVE</span>
+                <span class="badge badge-pro-custom fw-bold px-3 py-2 rounded-pill shadow-sm" id="trialStatusBadge">Teste Grátis: 30 Dias Restantes</span>
+                <button class="btn btn-sm btn-info fw-semibold text-dark" type="button" onclick="abrirModalPagamento()">
+                    <i class="bi bi-credit-card me-1"></i> Ativar Licença
+                </button>
                 <form th:action="@{/logout}" method="post" class="mb-0">
                     <button type="submit" class="btn btn-outline-secondary btn-sm fw-semibold px-3 rounded-2 text-secondary">
                         <i class="bi bi-box-arrow-right me-1"></i> Sair
@@ -804,6 +934,13 @@
                 </form>
             </div>
         </header>
+
+        <div class="container-fluid px-4 pt-3">
+            <div id="bannerAlertaTrial" role="status" aria-live="polite">
+                <div><strong>⚠️ Atenção Gerente!</strong> O período de teste grátis do seu Auto Center expira em <strong id="trialDiasRestantes">0 dias</strong>. Evite a interrupção dos seus serviços e do pátio: Ative sua assinatura agora!</div>
+                <button type="button" class="btn btn-sm trial-alert-action" onclick="abrirCheckoutSaas()">Ativar Licença Corporativa</button>
+            </div>
+        </div>
 
         <div class="container-fluid px-4 py-4">
 
@@ -859,112 +996,30 @@
                 </div>
             </div>
 
-            <!-- BARRA DE KPIS DO PIPELINE -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-3">
-                    <div class="kpi-card d-flex align-items-center justify-content-between">
-                        <div>
-                            <span class="kpi-label text-uppercase">Pipeline Total</span>
-                            <h4 class="mb-0 fw-bold mt-1" th:text="${'R$ ' + #numbers.formatDecimal(valorFunil, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
-                        </div>
-                        <div class="kpi-icon-wrapper bg-light-success-soft">
-                            <i class="bi bi-currency-dollar"></i>
-                        </div>
-                    </div>
+            <!-- INDICADORES OPERACIONAIS DO AUTO CENTER -->
+            <section class="operations-strip mb-4" aria-label="Indicadores operacionais">
+                <div class="operation-metric">
+                    <span>Veículos no Pátio</span>
+                    <strong th:text="${activeVehicles}">0</strong>
                 </div>
-                <div class="col-md-3">
-                    <div class="kpi-card d-flex align-items-center justify-content-between">
-                        <div>
-                            <span class="kpi-label text-uppercase">Leads em Carteira</span>
-                            <h4 class="mb-0 fw-bold mt-1" th:text="${totalLeads}">0</h4>
-                        </div>
-                        <div class="kpi-icon-wrapper bg-light-primary-soft">
-                            <i class="bi bi-people-fill"></i>
-                        </div>
-                    </div>
+                <div class="operation-metric">
+                    <span>Receita de Mão de Obra</span>
+                    <strong th:text="${'R$ ' + #numbers.formatDecimal(serviceRevenue, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
                 </div>
-                <div class="col-md-3">
-                    <div class="kpi-card d-flex align-items-center justify-content-between">
-                        <div>
-                            <span class="kpi-label text-uppercase">Taxa de Conversão</span>
-                            <h4 class="mb-0 fw-bold mt-1" th:text="${taxaConversao + '%'}">0.0%</h4>
-                        </div>
-                        <div class="kpi-icon-wrapper bg-light-warning-soft">
-                            <i class="bi bi-graph-up-arrow"></i>
-                        </div>
-                    </div>
+                <div class="operation-metric">
+                    <span>Receita de Peças / Insumos</span>
+                    <strong th:text="${'R$ ' + #numbers.formatDecimal(partsRevenue, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
                 </div>
-                <div class="col-md-3">
-                    <div class="kpi-card d-flex align-items-center justify-content-between">
-                        <div>
-                            <span class="kpi-label text-uppercase">Automação & IA</span>
-                            <h4 class="mb-0 fw-bold mt-1 text-info" style="font-size: 1.05rem;"><i class="bi bi-shield-check me-1"></i> Ativo & Seguro</h4>
-                        </div>
-                        <div class="kpi-icon-wrapper bg-light-info-soft">
-                            <i class="bi bi-cpu"></i>
-                        </div>
-                    </div>
+                <div class="operation-metric operation-metric-highlight">
+                    <span>Ticket Médio por O.S.</span>
+                    <strong th:text="${'R$ ' + #numbers.formatDecimal(averageTicket, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
                 </div>
-            </div>
-
-            <!-- Banner Promocional / Upgrade PRO -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="pro-banner d-flex align-items-center justify-content-between flex-wrap gap-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <i class="bi bi-rocket-takeoff fs-2 text-info"></i>
-                            <div>
-                                <h6 class="fw-bold mb-1">Desbloqueie todo o potencial analítico com o DT NEXUS PRO</h6>
-                                <p class="small mb-0 text-secondary">Automações avançadas de funil, scoring preditivo de leads por IA e relatórios ilimitados.</p>
-                            </div>
-                        </div>
-                        <button class="btn btn-pro-sober fw-bold px-4 shadow-sm rounded-2" onclick="alert('Módulo de Upgrade PRO acionado!');">
-                            <i class="bi bi-stars me-1"></i> Fazer Upgrade PRO
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </section>
             
-            <!-- Barra de Comando e Inteligência Unificada -->
-            <div class="d-flex flex-column flex-xl-row align-items-center justify-content-between gap-4 p-4 mb-4 rounded-3 border border-info border-opacity-25 shadow-sm" style="background-color: var(--bg-card);">
-                <div class="d-flex align-items-center gap-4 w-100 w-xl-auto overflow-x-auto pb-2 pb-xl-0">
-                    <div class="d-flex align-items-center gap-3 border-end border-secondary border-opacity-25 pe-4 flex-shrink-0">
-                        <div class="p-2 bg-info bg-opacity-10 rounded-2 text-info">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </div>
-                        <div>
-                            <span class="d-block small text-secondary">Leads Ativos</span>
-                            <span class="fw-bold fs-5">142 <span class="text-success small fw-normal">+12%</span></span>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-3 border-end border-secondary border-opacity-25 pe-4 flex-shrink-0">
-                        <div class="p-2 bg-success bg-opacity-10 rounded-2 text-success">
-                            <i class="fa-solid fa-wallet"></i>
-                        </div>
-                        <div>
-                            <span class="d-block small text-secondary">Pipeline Hoje</span>
-                            <span class="fw-bold fs-5">R$ 48.900</span>
-                        </div>
-                    </div>
-
-                    <div class="d-none d-xl-flex align-items-center gap-2 bg-warning bg-opacity-10 border border-warning border-opacity-25 px-3 py-2 rounded-2 text-warning small flex-shrink-0">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <span>3 leads sem contato há +48h</span>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center gap-2 w-100 w-xl-auto justify-content-end">
-                    <button onclick="abrirModalCadastroLead()" class="btn btn-info fw-semibold text-dark px-3 py-2 d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-plus small"></i> Novo Lead
-                    </button>
-                    <button onclick="alert('Módulo de Tarefas em breve!')" class="btn btn-outline-secondary px-3 py-2 d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-calendar-plus text-info small"></i> Tarefa
-                    </button>
-                    <button class="btn btn-outline-secondary p-2" title="Filtros Avançados" onclick="alert('Filtros avançados em breve!')">
-                        <i class="fa-solid fa-sliders text-info"></i>
-                    </button>
-                </div>
+            <div class="d-flex justify-content-end mb-4">
+                <button onclick="abrirPainelOS(this)" class="btn btn-info fw-semibold text-dark px-3 py-2 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-clipboard-list small"></i> Nova O.S.
+                </button>
             </div>
 
             <!-- BARRA DE BUSCA RÁPIDA -->
@@ -1006,178 +1061,233 @@
                 </div>
             </div>
 
+            <section id="visaoPlanilhaOS" class="form-card mb-4" style="display: none;" aria-labelledby="tituloPlanilhaOS">
+                <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+                    <div>
+                        <h2 id="tituloPlanilhaOS" class="h5 fw-bold mb-1">Planilha de Ordens de Serviço</h2>
+                        <p class="small text-secondary mb-0">Atualize várias entradas do pátio em uma única operação.</p>
+                    </div>
+                    <button type="button" class="btn btn-success fw-semibold" onclick="salvarPlanilhaOSInBatch()">
+                        <i class="bi bi-cloud-arrow-up me-1"></i> Salvar alterações
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle service-order-sheet" id="planilhaOSTable">
+                        <thead>
+                            <tr>
+                                <th>ID O.S.</th><th>Cliente</th><th>Veículo / Modelo</th><th>Placa</th>
+                                <th>Chassi</th><th>KM Atual</th><th>Serviço</th><th>Status Atual</th><th>Mão de Obra</th><th>Peças / Insumos</th><th>Valor Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="c : ${contacts}" th:data-id="${c.id}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-veiculo-chassis="${c.vehicleChassis}" th:data-veiculo-km="${c.vehicleKm}" th:data-service-value="${c.serviceValue}" th:data-parts-value="${c.partsValue}" th:data-servico="${c.serviceInterest}" th:data-status="${c.statusColumn}">
+                                <td><input class="form-control form-control-sm" data-field="id" th:value="${c.id}" readonly></td>
+                                <td><input class="form-control form-control-sm" data-field="cliente" th:value="${c.name}"></td>
+                                <td><input class="form-control form-control-sm" data-field="veiculo" th:value="${c.vehicleModel}"></td>
+                                <td><input class="form-control form-control-sm text-uppercase" data-field="placa" th:value="${c.vehiclePlate}" maxlength="8"></td>
+                                <td><input class="form-control form-control-sm text-uppercase" data-field="chassi" th:value="${c.vehicleChassis}" maxlength="17"></td>
+                                <td><input class="form-control form-control-sm" data-field="km" type="number" min="0" step="1" th:value="${c.vehicleKm}"></td>
+                                <td><select class="form-select form-select-sm" data-field="servico"><option value="">Selecione</option><option>Diagnóstico</option><option>Alinhamento e Balanceamento</option><option>Troca de Óleo</option><option>Freios</option><option>Suspensão</option><option>Elétrica / Injeção</option></select></td>
+                                <td><select class="form-select form-select-sm" data-field="status"><option>Recepção / Diagnóstico</option><option>Aguardando Peças</option><option>Na Oficina / Elevador</option><option>Teste de Rodagem</option><option>Pronto / Lavagem</option><option>Entregue / Pago</option></select></td>
+                                <td><input class="form-control form-control-sm" data-field="serviceValue" type="number" min="0" step="0.01" th:value="${c.serviceValue}"></td>
+                                <td><input class="form-control form-control-sm" data-field="partsValue" type="number" min="0" step="0.01" th:value="${c.partsValue}"></td>
+                                <td><input class="form-control form-control-sm" data-field="valorTotal" type="number" min="0" step="0.01" th:value="${c.value}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
             <!-- Funil Kanban com 6 colunas fixas e interativas -->
             <div class="kanban-board" id="kanbanBoard">
 
                 <!-- Coluna 1 -->
-                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-1" data-column-id="1" data-status="Novo Lead">
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-1" data-column-id="1" data-status="Recepção / Diagnóstico">
                     <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
                         <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
                             <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
-                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Novo Lead</h6>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Recepção / Diagnóstico</h6>
                             <small class="text-muted opacity-50 ms-1">✏️</small>
                         </div>
-                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Novo Lead">0</span>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Recepção / Diagnóstico">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Novo Lead'}" class="card-lead card-novo-lead" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Recepção / Diagnóstico'}" class="card-lead card-novo-lead" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
-                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
-                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
-                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleModel != null and !c.vehicleModel.empty}"><i class="bi bi-car-front-fill"></i><span th:text="${c.vehicleModel}">Veículo</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehiclePlate != null and !c.vehiclePlate.empty}"><i class="bi bi-credit-card-2-front"></i><span th:text="${c.vehiclePlate}">Placa</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleChassis != null and !c.vehicleChassis.empty}"><i class="bi bi-upc-scan"></i><span th:text="${c.vehicleChassis}">Chassi</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleKm != null}"><i class="bi bi-speedometer2"></i><span th:text="${#numbers.formatInteger(c.vehicleKm, 1, 'POINT') + ' KM'}">0 KM</span></div>
+                            <div class="vehicle-detail" th:if="${c.serviceValue != null}"><i class="bi bi-wrench-adjustable"></i><span th:text="${'Mão de obra: R$ ' + #numbers.formatDecimal(c.serviceValue, 1, 'POINT', 2, 'COMMA')}">Mão de obra</span></div>
+                            <div class="vehicle-detail" th:if="${c.partsValue != null}"><i class="bi bi-box-seam"></i><span th:text="${'Peças: R$ ' + #numbers.formatDecimal(c.partsValue, 1, 'POINT', 2, 'COMMA')}">Peças</span></div>
                             <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
                                 <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
-                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirPainelOS(this)" title="Abrir a Ordem de Serviço">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Orçamento / O.S. (PDF)
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Coluna 2 -->
-                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-2" data-column-id="2" data-status="Em Negociação">
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-2" data-column-id="2" data-status="Aguardando Peças">
                     <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
                         <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
                             <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
-                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Em Negociação</h6>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Aguardando Peças</h6>
                             <small class="text-muted opacity-50 ms-1">✏️</small>
                         </div>
-                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Em Negociação">0</span>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Aguardando Peças">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Em Negociação'}" class="card-lead card-em-negociacao" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Aguardando Peças'}" class="card-lead card-em-negociacao" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
-                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
-                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
-                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleModel != null and !c.vehicleModel.empty}"><i class="bi bi-car-front-fill"></i><span th:text="${c.vehicleModel}">Veículo</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehiclePlate != null and !c.vehiclePlate.empty}"><i class="bi bi-credit-card-2-front"></i><span th:text="${c.vehiclePlate}">Placa</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleChassis != null and !c.vehicleChassis.empty}"><i class="bi bi-upc-scan"></i><span th:text="${c.vehicleChassis}">Chassi</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleKm != null}"><i class="bi bi-speedometer2"></i><span th:text="${#numbers.formatInteger(c.vehicleKm, 1, 'POINT') + ' KM'}">0 KM</span></div>
+                            <div class="vehicle-detail" th:if="${c.serviceValue != null}"><i class="bi bi-wrench-adjustable"></i><span th:text="${'Mão de obra: R$ ' + #numbers.formatDecimal(c.serviceValue, 1, 'POINT', 2, 'COMMA')}">Mão de obra</span></div>
+                            <div class="vehicle-detail" th:if="${c.partsValue != null}"><i class="bi bi-box-seam"></i><span th:text="${'Peças: R$ ' + #numbers.formatDecimal(c.partsValue, 1, 'POINT', 2, 'COMMA')}">Peças</span></div>
                             <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
                                 <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
-                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirPainelOS(this)" title="Abrir a Ordem de Serviço">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Orçamento / O.S. (PDF)
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Coluna 3 -->
-                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-3" data-column-id="3" data-status="Proposta Enviada">
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-3" data-column-id="3" data-status="Na Oficina / Elevador">
                     <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
                         <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
                             <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
-                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Proposta Enviada</h6>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Na Oficina / Elevador</h6>
                             <small class="text-muted opacity-50 ms-1">✏️</small>
                         </div>
-                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Proposta Enviada">0</span>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Na Oficina / Elevador">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Proposta Enviada'}" class="card-lead card-proposta-enviada" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Na Oficina / Elevador'}" class="card-lead card-proposta-enviada" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
-                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
-                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
-                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleModel != null and !c.vehicleModel.empty}"><i class="bi bi-car-front-fill"></i><span th:text="${c.vehicleModel}">Veículo</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehiclePlate != null and !c.vehiclePlate.empty}"><i class="bi bi-credit-card-2-front"></i><span th:text="${c.vehiclePlate}">Placa</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleChassis != null and !c.vehicleChassis.empty}"><i class="bi bi-upc-scan"></i><span th:text="${c.vehicleChassis}">Chassi</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleKm != null}"><i class="bi bi-speedometer2"></i><span th:text="${#numbers.formatInteger(c.vehicleKm, 1, 'POINT') + ' KM'}">0 KM</span></div>
+                            <div class="vehicle-detail" th:if="${c.serviceValue != null}"><i class="bi bi-wrench-adjustable"></i><span th:text="${'Mão de obra: R$ ' + #numbers.formatDecimal(c.serviceValue, 1, 'POINT', 2, 'COMMA')}">Mão de obra</span></div>
+                            <div class="vehicle-detail" th:if="${c.partsValue != null}"><i class="bi bi-box-seam"></i><span th:text="${'Peças: R$ ' + #numbers.formatDecimal(c.partsValue, 1, 'POINT', 2, 'COMMA')}">Peças</span></div>
                             <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
                                 <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
-                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirPainelOS(this)" title="Abrir a Ordem de Serviço">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Orçamento / O.S. (PDF)
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Coluna 4 (Pós-Venda) -->
-                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-4" data-column-id="4" data-status="Pós-Venda">
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-4" data-column-id="4" data-status="Teste de Rodagem">
                     <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
                         <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
                             <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
-                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Pós-Venda</h6>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Teste de Rodagem</h6>
                             <small class="text-muted opacity-50 ms-1">✏️</small>
                         </div>
-                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Pós-Venda">0</span>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Teste de Rodagem">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Pós-Venda'}" class="card-lead card-pos-venda" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Teste de Rodagem'}" class="card-lead card-pos-venda" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
-                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
-                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
-                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleModel != null and !c.vehicleModel.empty}"><i class="bi bi-car-front-fill"></i><span th:text="${c.vehicleModel}">Veículo</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehiclePlate != null and !c.vehiclePlate.empty}"><i class="bi bi-credit-card-2-front"></i><span th:text="${c.vehiclePlate}">Placa</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleChassis != null and !c.vehicleChassis.empty}"><i class="bi bi-upc-scan"></i><span th:text="${c.vehicleChassis}">Chassi</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleKm != null}"><i class="bi bi-speedometer2"></i><span th:text="${#numbers.formatInteger(c.vehicleKm, 1, 'POINT') + ' KM'}">0 KM</span></div>
+                            <div class="vehicle-detail" th:if="${c.serviceValue != null}"><i class="bi bi-wrench-adjustable"></i><span th:text="${'Mão de obra: R$ ' + #numbers.formatDecimal(c.serviceValue, 1, 'POINT', 2, 'COMMA')}">Mão de obra</span></div>
+                            <div class="vehicle-detail" th:if="${c.partsValue != null}"><i class="bi bi-box-seam"></i><span th:text="${'Peças: R$ ' + #numbers.formatDecimal(c.partsValue, 1, 'POINT', 2, 'COMMA')}">Peças</span></div>
                             <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
                                 <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
-                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirPainelOS(this)" title="Abrir a Ordem de Serviço">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Orçamento / O.S. (PDF)
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Coluna 5 -->
-                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-5" data-column-id="5" data-status="Fechado">
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-5" data-column-id="5" data-status="Pronto / Lavagem">
                     <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
                         <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
                             <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
-                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Fechado</h6>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Pronto / Lavagem</h6>
                             <small class="text-muted opacity-50 ms-1">✏️</small>
                         </div>
-                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Fechado">0</span>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Pronto / Lavagem">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Fechado'}" class="card-lead card-fechado" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Pronto / Lavagem'}" class="card-lead card-fechado" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
-                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
-                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
-                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleModel != null and !c.vehicleModel.empty}"><i class="bi bi-car-front-fill"></i><span th:text="${c.vehicleModel}">Veículo</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehiclePlate != null and !c.vehiclePlate.empty}"><i class="bi bi-credit-card-2-front"></i><span th:text="${c.vehiclePlate}">Placa</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleChassis != null and !c.vehicleChassis.empty}"><i class="bi bi-upc-scan"></i><span th:text="${c.vehicleChassis}">Chassi</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleKm != null}"><i class="bi bi-speedometer2"></i><span th:text="${#numbers.formatInteger(c.vehicleKm, 1, 'POINT') + ' KM'}">0 KM</span></div>
+                            <div class="vehicle-detail" th:if="${c.serviceValue != null}"><i class="bi bi-wrench-adjustable"></i><span th:text="${'Mão de obra: R$ ' + #numbers.formatDecimal(c.serviceValue, 1, 'POINT', 2, 'COMMA')}">Mão de obra</span></div>
+                            <div class="vehicle-detail" th:if="${c.partsValue != null}"><i class="bi bi-box-seam"></i><span th:text="${'Peças: R$ ' + #numbers.formatDecimal(c.partsValue, 1, 'POINT', 2, 'COMMA')}">Peças</span></div>
                             <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
                                 <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
-                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirPainelOS(this)" title="Abrir a Ordem de Serviço">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Orçamento / O.S. (PDF)
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Coluna 6 -->
-                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-6" data-column-id="6" data-status="Cancelado">
+                <div class="kanban-column" ondragover="columnDragOver(event)" ondragleave="columnDragLeave(event)" ondrop="columnDrop(event)" id="col-6" data-column-id="6" data-status="Entregue / Pago">
                     <div class="d-flex justify-content-between align-items-center mb-3 px-1 kanban-column-header">
                         <div class="d-flex align-items-center gap-2 flex-1 cursor-pointer group" onclick="enableColumnEdit(this)" title="Clique para editar o nome do estágio">
                             <i class="bi bi-grip-vertical text-secondary fs-5" draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)"></i>
-                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Cancelado</h6>
+                            <h6 class="fw-bold text-uppercase mb-0 column-title" style="font-size: 0.75rem;">Entregue / Pago</h6>
                             <small class="text-muted opacity-50 ms-1">✏️</small>
                         </div>
-                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Cancelado">0</span>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary shadow-sm rounded-pill count-badge border px-2 py-1" style="font-size: 11px;" data-status="Entregue / Pago">0</span>
                     </div>
                     <div class="cards-container" ondragover="cardAllowDrop(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event)">
-                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Cancelado'}" class="card-lead card-cancelado" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
+                        <div th:each="c : ${contacts}" th:if="${c.statusColumn == 'Entregue / Pago'}" class="card-lead card-cancelado" draggable="true" ondragstart="cardDragStart(event)" ondragend="cardDragEnd(event)" th:id="'card-' + ${c.id}" th:data-id="${c.id}" th:data-nome="${c.name}" th:data-empresa="${c.company}" th:data-telefone="${c.phone}" th:data-valor="${c.value}" th:data-cargo="${c.jobTitle}" th:data-porte="${c.companySize}" th:data-email="${c.email}" th:data-tipo-cliente="${c.customerType}" th:data-veiculo-modelo="${c.vehicleModel}" th:data-veiculo-placa="${c.vehiclePlate}" th:data-servico="${c.serviceInterest}">
                             <div class="d-flex justify-content-between align-items-start mb-2"><strong class="d-block fs-6 fw-bold" th:text="${c.name}">Nome</strong></div>
-                            <div class="small text-secondary mb-1" th:if="${c.company != null and !c.company.empty}"><i class="bi bi-building me-1"></i><span th:text="${c.company}">empresa</span></div>
-                            <div class="small text-secondary mb-2" th:if="${c.phone != null and !c.phone.empty}"><i class="bi bi-telephone me-1"></i><span th:text="${c.phone}">telefone</span></div>
-                            <div class="fw-bold text-success my-2 fs-6" th:if="${c.value != null}">R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}">0,00</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleModel != null and !c.vehicleModel.empty}"><i class="bi bi-car-front-fill"></i><span th:text="${c.vehicleModel}">Veículo</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehiclePlate != null and !c.vehiclePlate.empty}"><i class="bi bi-credit-card-2-front"></i><span th:text="${c.vehiclePlate}">Placa</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleChassis != null and !c.vehicleChassis.empty}"><i class="bi bi-upc-scan"></i><span th:text="${c.vehicleChassis}">Chassi</span></div>
+                            <div class="vehicle-detail" th:if="${c.vehicleKm != null}"><i class="bi bi-speedometer2"></i><span th:text="${#numbers.formatInteger(c.vehicleKm, 1, 'POINT') + ' KM'}">0 KM</span></div>
+                            <div class="vehicle-detail" th:if="${c.serviceValue != null}"><i class="bi bi-wrench-adjustable"></i><span th:text="${'Mão de obra: R$ ' + #numbers.formatDecimal(c.serviceValue, 1, 'POINT', 2, 'COMMA')}">Mão de obra</span></div>
+                            <div class="vehicle-detail" th:if="${c.partsValue != null}"><i class="bi bi-box-seam"></i><span th:text="${'Peças: R$ ' + #numbers.formatDecimal(c.partsValue, 1, 'POINT', 2, 'COMMA')}">Peças</span></div>
                             <div class="mt-3 pt-2 border-top d-flex justify-content-between gap-1" style="border-color: var(--border-color) !important;">
                                 <button class="btn btn-sm btn-light border flex-fill text-info" onclick="abrirModalEditarLead(this)" title="Editar"><i class="bi bi-pencil"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-warning" onclick="abrirModalNotas(this)" title="Anotações"><i class="bi bi-journal-text"></i></button>
                                 <button class="btn btn-sm btn-light border flex-fill text-success" onclick="abrirWhatsAppCard(this)" th:data-nome="${c.name}" th:data-telefone="${c.phone}" title="Chamar no WhatsApp"><i class="bi bi-whatsapp"></i></button>
                                 <button type="button" class="btn btn-sm btn-light border flex-fill text-danger" onclick="excluirLead(this)" title="Excluir"><i class="bi bi-trash"></i></button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirComposicaoProposta(this)" title="Redigir e enviar a proposta (PDF, WhatsApp ou E-mail)">
-                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Proposta
+                            <button type="button" class="btn btn-sm btn-outline-proposta w-100 mt-2 fw-semibold" onclick="abrirPainelOS(this)" title="Abrir a Ordem de Serviço">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Orçamento / O.S. (PDF)
                             </button>
                         </div>
                     </div>
@@ -1195,7 +1305,7 @@
                 <div class="modal-header border-bottom border-secondary border-opacity-25 py-3">
                     <div class="d-flex align-items-center gap-2">
                         <i class="bi bi-person-plus-fill text-info fs-4"></i>
-                        <h5 class="modal-title fw-bold mb-0">DT NEXUS &bull; Cadastro & Avaliação de Lead</h5>
+                        <h5 class="modal-title fw-bold mb-0">DT NEXUS &bull; Cadastro de Cliente e Veículo</h5>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
                 </div>
@@ -1203,6 +1313,10 @@
                 <div class="modal-body p-4">
                     <form id="formLeadModal" th:action="@{/save}" th:object="${contact}" method="post">
                         <input type="hidden" id="modalLeadId" th:field="*{id}" />
+                        <input type="hidden" id="modalLeadValue" th:field="*{value}" />
+                        <input type="hidden" id="modalLeadCompany" th:field="*{company}" />
+                        <input type="hidden" id="modalLeadJobTitle" th:field="*{jobTitle}" />
+                        <input type="hidden" id="modalLeadCompanySize" th:field="*{companySize}" />
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-4">
@@ -1210,49 +1324,24 @@
                                 <input type="text" class="form-control" id="modalLeadName" th:field="*{name}" placeholder="Ex: João Silva" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label small text-secondary fw-semibold">Empresa</label>
-                                <input type="text" class="form-control" id="modalLeadCompany" th:field="*{company}" placeholder="Ex: Tech Solutions">
-                            </div>
-                            <div class="col-md-4">
                                 <label class="form-label small text-secondary fw-semibold">Telefone / WhatsApp</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-element text-secondary border" style="border-color: var(--border-color); font-size: 0.85rem;">🇧🇷 +55</span>
+                                    <span class="input-group-text bg-element text-secondary border" style="border-color: var(--border-color); font-size: 0.85rem;">+55</span>
                                     <input type="text" class="form-control" id="modalLeadPhone" th:field="*{phone}" placeholder="(00) 00000-0000">
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-4">
-                                <label class="form-label small text-secondary fw-semibold">Cargo na empresa</label>
-                                <input type="text" class="form-control" id="modalLeadJobTitle" th:field="*{jobTitle}" placeholder="Ex: Gerente / Diretor">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small text-secondary fw-semibold">Porte da empresa</label>
-                                <select class="form-select" id="modalLeadCompanySize" th:field="*{companySize}">
-                                    <option value="">Selecione o tamanho da empresa</option>
-                                    <option value="Micro (1 a 10 funcionários)">Micro (1 a 10 funcionários)</option>
-                                    <option value="Pequena (11 a 50 funcionários)">Pequena (11 a 50 funcionários)</option>
-                                    <option value="Média (51 a 200 funcionários)">Média (51 a 200 funcionários)</option>
-                                    <option value="Grande (200+ funcionários)">Grande (200+ funcionários)</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small text-secondary fw-semibold">Valor Estimado (R$)</label>
-                                <input type="number" step="0.01" class="form-control" id="modalLeadValue" th:field="*{value}" placeholder="0,00">
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
                             <div class="col-md-4">
                                 <label class="form-label small text-secondary fw-semibold">Tipo de Cliente</label>
                                 <select class="form-select" id="modalLeadCustomerType" th:field="*{customerType}">
                                     <option value="">Selecione</option>
-                                    <option value="Consumidor Final">Consumidor Final</option>
+                                    <option value="Cliente Particular">Cliente Particular</option>
+                                    <option value="Frota / Empresa">Frota / Empresa</option>
                                     <option value="Oficina Parceira">Oficina Parceira</option>
-                                    <option value="Frota">Frota</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
                             <div class="col-md-4">
                                 <label class="form-label small text-secondary fw-semibold">Modelo do Veículo</label>
                                 <input type="text" class="form-control" id="modalLeadVehicleModel" th:field="*{vehicleModel}" placeholder="Ex: Honda Civic, Hilux, CG 160">
@@ -1261,18 +1350,22 @@
                                 <label class="form-label small text-secondary fw-semibold">Placa</label>
                                 <input type="text" class="form-control text-uppercase" id="modalLeadVehiclePlate" th:field="*{vehiclePlate}" placeholder="ABC1D23" maxlength="8">
                             </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Valor de Mão de Obra (R$)</label>
+                                <input type="number" min="0" step="0.01" class="form-control" id="modalLeadServiceValue" th:field="*{serviceValue}" placeholder="0,00">
+                            </div>
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-4">
                                 <label class="form-label small text-secondary fw-semibold">Estágio do Funil</label>
                                 <select class="form-select" id="modalLeadStatus" th:field="*{statusColumn}">
-                                    <option value="Novo Lead">Novo Lead</option>
-                                    <option value="Em Negociação">Em Negociação</option>
-                                    <option value="Proposta Enviada">Proposta Enviada</option>
-                                    <option value="Pós-Venda">Pós-Venda</option>
-                                    <option value="Fechado">Fechado</option>
-                                    <option value="Cancelado">Cancelado</option>
+                                    <option value="Recepção / Diagnóstico">Recepção / Diagnóstico</option>
+                                    <option value="Aguardando Peças">Aguardando Peças</option>
+                                    <option value="Na Oficina / Elevador">Na Oficina / Elevador</option>
+                                    <option value="Teste de Rodagem">Teste de Rodagem</option>
+                                    <option value="Pronto / Lavagem">Pronto / Lavagem</option>
+                                    <option value="Entregue / Pago">Entregue / Pago</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -1295,22 +1388,123 @@
                                 </select>
                             </div>
                             <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Valor de Peças / Insumos (R$)</label>
+                                <input type="number" min="0" step="0.01" class="form-control" id="modalLeadPartsValue" th:field="*{partsValue}" placeholder="0,00">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
                                 <label class="form-label small text-secondary fw-semibold">E-mail de Contato</label>
                                 <input type="email" class="form-control" id="modalLeadEmail" th:field="*{email}" placeholder="cliente@email.com">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Chassi do Veículo</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control text-uppercase" id="modalLeadVehicleChassis" th:field="*{vehicleChassis}" placeholder="17 caracteres" maxlength="17">
+                                    <button type="button" class="btn btn-light border" onclick="buscarDadosVeiculo()" title="Buscar dados pela placa" aria-label="Buscar dados pela placa">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold">Quilometragem (KM) Atual</label>
+                                <input type="number" min="0" step="1" class="form-control" id="modalLeadVehicleKm" th:field="*{vehicleKm}" placeholder="Ex: 85000">
                             </div>
                         </div>
 
                         <p class="text-secondary small mt-3 mb-3" style="font-size: 11.5px;">
-                            A DT NEXUS protege sua privacidade e garante conformidade com padrões de segurança em nuvem. Ao salvar, os dados serão provisionados no pipeline comercial ativo.
+                            A DT NEXUS protege seus dados. Ao salvar, o cliente e o veículo ficam disponíveis no histórico do auto center e no pipeline de atendimento.
                         </p>
 
                         <div class="d-flex justify-content-end gap-2 pt-2 border-top border-secondary border-opacity-25">
                             <button type="button" class="btn btn-outline-secondary fw-semibold px-3" data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn fw-semibold px-4 text-white rounded-2" style="background-color: #0284c7; border-color: #0284c7;">
-                                <i class="bi bi-check-lg me-1"></i> Configurar / Salvar Lead
+                                <i class="bi bi-check-lg me-1"></i> Salvar Cliente e Veículo
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENGINE OPERACIONAL DE ORDEM DE SERVIÇO -->
+    <div class="modal fade" id="modalPainelOS" tabindex="-1" aria-labelledby="modalPainelOSLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content shadow-lg border-0" style="background-color: var(--bg-card); color: var(--text-main);">
+                <div class="modal-header border-bottom border-secondary border-opacity-25">
+                    <div>
+                        <span class="text-info small text-uppercase fw-bold">Operational Automotive CRM</span>
+                        <h2 class="modal-title h5 fw-bold mb-0" id="modalPainelOSLabel">Engine de Ordem de Serviço</h2>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="osContactId">
+                    <div class="os-summary mb-3">
+                        <div><span>O.S.</span><strong id="osNumero">Nova</strong></div>
+                        <div><span>Cliente</span><strong id="osClienteResumo">Não selecionado</strong></div>
+                        <div><span>Veículo</span><strong id="osVeiculoResumo">Não selecionado</strong></div>
+                        <div><span>Total</span><strong id="osTotalResumo">R$ 0,00</strong></div>
+                    </div>
+                    <nav class="os-tabs" aria-label="Módulos da ordem de serviço">
+                        <button type="button" class="active" onclick="trocarAbaOS('execucao', this)"><i class="bi bi-wrench-adjustable me-1"></i>Execução</button>
+                        <button type="button" onclick="trocarAbaOS('estoque', this)"><i class="bi bi-box-seam me-1"></i>Peças e Estoque</button>
+                        <button type="button" onclick="trocarAbaOS('checklist', this)"><i class="bi bi-clipboard2-check me-1"></i>Checklist</button>
+                        <button type="button" onclick="trocarAbaOS('historico', this)"><i class="bi bi-clock-history me-1"></i>Histórico</button>
+                        <button type="button" onclick="trocarAbaOS('faturamento', this)"><i class="bi bi-receipt me-1"></i>Faturamento</button>
+                    </nav>
+
+                    <section class="os-pane active" id="osPaneExecucao">
+                        <div class="row g-3">
+                            <div class="col-md-6"><label class="form-label small fw-semibold">Mecânico responsável</label><input id="osMecanico" class="form-control" type="text" placeholder="Nome do mecânico"></div>
+                            <div class="col-md-6"><label class="form-label small fw-semibold">Serviço principal</label><input id="osServico" class="form-control" type="text" placeholder="Serviço executado"></div>
+                            <div class="col-12"><label class="form-label small fw-semibold">Observações técnicas</label><textarea id="osObservacoes" class="form-control" rows="4" placeholder="Diagnóstico, procedimento e recomendações"></textarea></div>
+                        </div>
+                    </section>
+
+                    <section class="os-pane" id="osPaneEstoque">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-5"><label class="form-label small fw-semibold">Código da peça</label><input id="osPecaCodigo" class="form-control" type="search" placeholder="Código de referência"></div>
+                            <div class="col-md-2"><button type="button" class="btn btn-outline-info w-100" onclick="simularLeituraPeca()"><i class="bi bi-upc-scan me-1"></i>Ler código</button></div>
+                            <div class="col-md-5"><label class="form-label small fw-semibold">Descrição da peça</label><input id="osPecaDescricao" class="form-control" type="text" placeholder="Descrição do produto"></div>
+                            <div class="col-md-3"><label class="form-label small fw-semibold">Quantidade</label><input id="osPecaQuantidade" class="form-control" type="number" min="1" step="1" value="1"></div>
+                            <div class="col-md-3"><label class="form-label small fw-semibold">Custo unitário (R$)</label><input id="osPecaCusto" class="form-control" type="number" min="0" step="0.01"></div>
+                            <div class="col-md-3"><label class="form-label small fw-semibold">Venda unitária (R$)</label><input id="osPecaVenda" class="form-control" type="number" min="0" step="0.01"></div>
+                            <div class="col-md-3"><button type="button" class="btn btn-info text-dark fw-semibold w-100" onclick="adicionarPecaOS()"><i class="bi bi-plus-lg me-1"></i>Adicionar</button></div>
+                        </div>
+                        <div class="table-responsive mt-4"><table class="table table-sm align-middle os-table"><thead><tr><th>Código</th><th>Descrição</th><th>Qtd.</th><th>Custo</th><th>Venda</th><th>Estoque</th></tr></thead><tbody id="osPecasLista"></tbody></table></div>
+                    </section>
+
+                    <section class="os-pane" id="osPaneChecklist">
+                        <div class="row g-3">
+                            <div class="col-md-6"><label class="form-label small fw-semibold">Estado da carroceria</label><select id="checkCarroceria" class="form-select"><option>Sem avarias aparentes</option><option>Com arranhões</option><option>Com amassados</option><option>Necessita registro fotográfico</option></select></div>
+                            <div class="col-md-6"><label class="form-label small fw-semibold">Nível de óleo</label><select id="checkOleo" class="form-select"><option>Normal</option><option>Baixo</option><option>Não verificado</option></select></div>
+                            <div class="col-md-6"><label class="form-label small fw-semibold">Luzes do painel</label><select id="checkPainel" class="form-select"><option>Nenhuma luz acesa</option><option>Luz de injeção</option><option>Luz de óleo</option><option>Outras luzes</option></select></div>
+                            <div class="col-md-6"><label class="form-label small fw-semibold">Nível de combustível</label><select id="checkCombustivel" class="form-select"><option>Vazio</option><option>1/4</option><option>Meio</option><option>3/4</option><option>Cheio</option></select></div>
+                            <div class="col-md-6"><label class="form-label small fw-semibold">Itens entregues</label><input id="checkItens" class="form-control" type="text" placeholder="Chave, estepe, manual e acessórios"></div>
+                            <div class="col-12"><label class="form-label small fw-semibold">Observações da vistoria</label><textarea id="checkObservacoes" class="form-control" rows="3" placeholder="Registre as condições de entrada do veículo"></textarea></div>
+                            <div class="col-12"><label class="form-check"><input id="checkAceite" class="form-check-input" type="checkbox"><span class="form-check-label small">Cliente conferiu as condições de entrada e aceitou o registro eletrônico.</span></label></div>
+                        </div>
+                    </section>
+
+                    <section class="os-pane" id="osPaneHistorico">
+                        <div class="input-group mb-3"><input id="historicoBusca" class="form-control" type="search" placeholder="Pesquisar por placa ou cliente"><button type="button" class="btn btn-outline-info" onclick="consultarHistoricoOS()"><i class="bi bi-search"></i></button></div>
+                        <div id="historicoResultado" class="os-empty-state">Informe uma placa ou cliente para consultar o histórico local.</div>
+                    </section>
+
+                    <section class="os-pane" id="osPaneFaturamento">
+                        <div class="row g-3">
+                            <div class="col-md-6"><label class="form-label small fw-semibold">Status da nota fiscal</label><select id="osNotaStatus" class="form-select"><option>Não emitida</option><option>Em preparação</option><option>Emitida em ambiente de teste</option></select></div>
+                            <div class="col-md-6"><label class="form-label small fw-semibold">Número / protocolo</label><input id="osNotaProtocolo" class="form-control" type="text" placeholder="Protocolo da emissão"></div>
+                            <div class="col-12"><div class="os-invoice-note"><i class="bi bi-shield-check"></i><span>Integração fiscal preparada para receber o provedor autorizado do Auto Center.</span></div></div>
+                        </div>
+                    </section>
+                </div>
+                <div class="modal-footer border-top border-secondary border-opacity-25">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-info text-dark fw-semibold" onclick="emitirOS()"><i class="bi bi-printer me-1"></i>Emitir O.S.</button>
                 </div>
             </div>
         </div>
@@ -1515,8 +1709,60 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalPagamento" tabindex="-1" aria-labelledby="modalPagamentoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-main);">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h2 class="modal-title h5 fw-bold" id="modalPagamentoLabel">Ativar licença corporativa</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-secondary small">Escolha uma forma de pagamento para liberar a operação sem interrupção.</p>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-success" onclick="simularPagamento('PIX')"><i class="bi bi-qr-code me-2"></i> Pagar com PIX</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="simularPagamento('Cartão de Crédito')"><i class="bi bi-credit-card me-2"></i> Pagar com Cartão de Crédito</button>
+                    </div>
+                    <div id="pagamentoResultado" class="mt-3 small" aria-live="polite"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screenLockSaas" role="dialog" aria-modal="true" aria-labelledby="saasLockTitle">
+        <section class="saas-lock-card">
+            <div class="saas-lock-title" id="saasLockTitle"><i class="bi bi-shield-lock-fill"></i><span>DT NEXUS CRM &bull; Período de Avaliação Encerrado</span></div>
+            <p class="saas-lock-copy mt-3">Daniel, seu período de avaliação terminou. Seus dados continuam salvos e protegidos, prontos para serem liberados com a assinatura corporativa.</p>
+            <div class="saas-plan-label">💎 PLANO EM COMPATIBILIDADE: NEXUS ENTERPRISE ACTIVE</div>
+            <div class="saas-price">R$ 149,90 <small class="text-secondary fw-normal">/ mês (Sem fidelidade, cancele quando quiser)</small></div>
+            <ul class="saas-includes">
+                <li>✅ Painel do Pátio (Kanban) com 6 estágios operacionais de oficina.</li>
+                <li>✅ Planilha Geral de Ordens de Serviço (O.S.) com entradas em lote.</li>
+                <li>✅ Central Omnichannel Nexus Zap Tracker integrada à sidebar.</li>
+                <li>✅ Calculadora financeira de mão de obra e peças.</li>
+                <li>✅ Checklist estrutural e assinatura eletrônica para proteção jurídica.</li>
+                <li>✅ Banco SaaS isolado e seguro com Redis Cache.</li>
+            </ul>
+            <div class="checkout-tabs" role="tablist">
+                <button type="button" class="active" onclick="trocarCheckout('pix', this)">PIX</button>
+                <button type="button" onclick="trocarCheckout('cartao', this)">Cartão de Crédito</button>
+            </div>
+            <div class="checkout-pane active text-center" id="checkoutPanePix">
+                <div class="checkout-qr" aria-label="QR Code PIX"></div>
+                <div class="checkout-key mb-2" id="pixCopiaCola">dt-nexus-pix-14990-auto-center</div>
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="copiarChavePix()"><i class="bi bi-copy me-1"></i>Copiar Chave Copia e Cola</button>
+            </div>
+            <div class="checkout-pane" id="checkoutPaneCartao">
+                <label class="form-label small text-secondary" for="checkoutCardNumber">Número do cartão</label>
+                <input id="checkoutCardNumber" class="form-control mb-2" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000">
+                <div class="row g-2"><div class="col-6"><input class="form-control" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/AA"></div><div class="col-6"><input class="form-control" inputmode="numeric" autocomplete="cc-csc" placeholder="CVV"></div></div>
+            </div>
+            <button type="button" class="btn btn-info text-dark fw-bold w-100 mt-3" onclick="confirmarPagamentoSaas()"><i class="bi bi-lock-fill me-1"></i>Confirmar Pagamento</button>
+        </section>
+    </div>
+
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/nexus-scripts.js}"></script>
 
     <!-- Scripts de Funcionalidade & Correções de Kanban/Diretório -->
     <script>
@@ -1539,7 +1785,6 @@
                 document.body.classList.add('sidebar-collapsed');
             }
 
-            carregarPinsSalvos();
             atualizarContadores();
         });
 
@@ -1610,14 +1855,18 @@
             document.getElementById('modalLeadCompany').value = '';
             document.getElementById('modalLeadPhone').value = '';
             document.getElementById('modalLeadValue').value = '';
+            document.getElementById('modalLeadServiceValue').value = '';
+            document.getElementById('modalLeadPartsValue').value = '';
             document.getElementById('modalLeadJobTitle').value = '';
             document.getElementById('modalLeadCompanySize').value = '';
             document.getElementById('modalLeadEmail').value = '';
             document.getElementById('modalLeadCustomerType').value = '';
             document.getElementById('modalLeadVehicleModel').value = '';
             document.getElementById('modalLeadVehiclePlate').value = '';
+            document.getElementById('modalLeadVehicleChassis').value = '';
+            document.getElementById('modalLeadVehicleKm').value = '';
             document.getElementById('modalLeadServiceInterest').value = '';
-            document.getElementById('modalLeadStatus').value = 'Novo Lead';
+            document.getElementById('modalLeadStatus').value = 'Recepção / Diagnóstico';
 
             const modalEl = document.getElementById('modalCadastroLead');
             if (!modalCadastroInstance) {
@@ -1629,22 +1878,28 @@
         function abrirModalEditarLead(btn) {
             // Lê os dados direto do elemento (card do Kanban ou linha da tabela do diretório)
             const origem = btn.closest('.card-lead') || btn.closest('tr');
+            const dadosPlanilha = origem ? document.querySelector(`#planilhaOSTable tr[data-id="${origem.getAttribute('data-id')}"]`) : null;
+            const lerDado = (nome, campoPlanilha) => origem?.getAttribute(nome) || dadosPlanilha?.querySelector(`[data-field="${campoPlanilha}"]`)?.value || '';
 
             document.getElementById('modalLeadId').value = origem ? (origem.getAttribute('data-id') || '') : '';
-            document.getElementById('modalLeadName').value = origem ? (origem.getAttribute('data-nome') || '') : '';
+            document.getElementById('modalLeadName').value = lerDado('data-nome', 'cliente');
             document.getElementById('modalLeadCompany').value = origem ? (origem.getAttribute('data-empresa') || '') : '';
-            document.getElementById('modalLeadPhone').value = origem ? (origem.getAttribute('data-telefone') || '') : '';
-            document.getElementById('modalLeadValue').value = origem ? (origem.getAttribute('data-valor') || '') : '';
+            document.getElementById('modalLeadPhone').value = lerDado('data-telefone', 'telefone');
+            document.getElementById('modalLeadValue').value = lerDado('data-valor', 'valorTotal');
+            document.getElementById('modalLeadServiceValue').value = origem?.getAttribute('data-service-value') || dadosPlanilha?.getAttribute('data-service-value') || '';
+            document.getElementById('modalLeadPartsValue').value = origem?.getAttribute('data-parts-value') || dadosPlanilha?.getAttribute('data-parts-value') || '';
             document.getElementById('modalLeadJobTitle').value = origem ? (origem.getAttribute('data-cargo') || '') : '';
             document.getElementById('modalLeadCompanySize').value = origem ? (origem.getAttribute('data-porte') || '') : '';
             document.getElementById('modalLeadEmail').value = origem ? (origem.getAttribute('data-email') || '') : '';
             document.getElementById('modalLeadCustomerType').value = origem ? (origem.getAttribute('data-tipo-cliente') || '') : '';
-            document.getElementById('modalLeadVehicleModel').value = origem ? (origem.getAttribute('data-veiculo-modelo') || '') : '';
-            document.getElementById('modalLeadVehiclePlate').value = origem ? (origem.getAttribute('data-veiculo-placa') || '') : '';
-            document.getElementById('modalLeadServiceInterest').value = origem ? (origem.getAttribute('data-servico') || '') : '';
+            document.getElementById('modalLeadVehicleModel').value = lerDado('data-veiculo-modelo', 'veiculo');
+            document.getElementById('modalLeadVehiclePlate').value = lerDado('data-veiculo-placa', 'placa');
+            document.getElementById('modalLeadVehicleChassis').value = lerDado('data-veiculo-chassis', 'chassi');
+            document.getElementById('modalLeadVehicleKm').value = lerDado('data-veiculo-km', 'km');
+            document.getElementById('modalLeadServiceInterest').value = lerDado('data-servico', 'servico');
 
             const coluna = origem ? origem.closest('.kanban-column') : null;
-            document.getElementById('modalLeadStatus').value = coluna ? coluna.getAttribute('data-status') : 'Novo Lead';
+            document.getElementById('modalLeadStatus').value = coluna ? coluna.getAttribute('data-status') : 'Recepção / Diagnóstico';
 
             const modalEl = document.getElementById('modalCadastroLead');
             if (!modalCadastroInstance) {
@@ -1669,66 +1924,6 @@
                 }
             });
             atualizarContadores();
-        }
-
-        function togglePin(event, btn) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            const item = btn.closest('.sidebar-item');
-            const itemId = item.getAttribute('data-id');
-            
-            let pinnedItems = JSON.parse(localStorage.getItem('dt_nexus_pins') || '[]');
-
-            if (pinnedItems.includes(itemId)) {
-                pinnedItems = pinnedItems.filter(id => id !== itemId);
-            } else {
-                pinnedItems.push(itemId);
-            }
-
-            localStorage.setItem('dt_nexus_pins', JSON.stringify(pinnedItems));
-            carregarPinsSalvos();
-        }
-
-        function carregarPinsSalvos() {
-            const pinnedItems = JSON.parse(localStorage.getItem('dt_nexus_pins') || '[]');
-            const favoritesSection = document.getElementById('favoritesSection');
-            const favoritesList = document.getElementById('favoritesList');
-            
-            favoritesList.innerHTML = '';
-
-            if (pinnedItems.length > 0) {
-                favoritesSection.style.display = 'block';
-                pinnedItems.forEach(id => {
-                    const originalItem = document.querySelector(`.sidebar-menu .sidebar-item[data-id="${id}"]`);
-                    if (originalItem) {
-                        const clone = originalItem.cloneNode(true);
-                        clone.classList.add('favorite-item');
-                        
-                        const pinIcon = clone.querySelector('.pin-btn i');
-                        pinIcon.className = "bi bi-pin-angle-fill text-info";
-                        clone.querySelector('.pin-btn').classList.add('pinned');
-                        
-                        favoritesList.appendChild(clone);
-                    }
-                });
-
-                document.querySelectorAll('.sidebar-menu > .sidebar-item').forEach(item => {
-                    const id = item.getAttribute('data-id');
-                    const pinBtn = item.querySelector('.pin-btn');
-                    const icon = pinBtn.querySelector('i');
-                    if (pinnedItems.includes(id)) {
-                        icon.className = "bi bi-pin-angle-fill text-info";
-                        pinBtn.classList.add('pinned');
-                    } else {
-                        icon.className = "bi bi-pin";
-                        pinBtn.classList.remove('pinned');
-                    }
-                });
-
-            } else {
-                favoritesSection.style.display = 'none';
-            }
         }
 
         function enableColumnEdit(container) {
@@ -1813,17 +2008,17 @@
 
                 // Atualização instantânea da borda lateral do card com base no novo estágio
                 draggedCard.classList.remove('card-novo-lead', 'card-em-negociacao', 'card-proposta-enviada', 'card-pos-venda', 'card-fechado', 'card-cancelado');
-                if (newStatus === 'Novo Lead') {
+                if (newStatus === 'Recepção / Diagnóstico') {
                     draggedCard.classList.add('card-novo-lead');
-                } else if (newStatus === 'Em Negociação') {
+                } else if (newStatus === 'Aguardando Peças') {
                     draggedCard.classList.add('card-em-negociacao');
-                } else if (newStatus === 'Proposta Enviada') {
+                } else if (newStatus === 'Na Oficina / Elevador') {
                     draggedCard.classList.add('card-proposta-enviada');
-                } else if (newStatus === 'Pós-Venda') {
+                } else if (newStatus === 'Teste de Rodagem') {
                     draggedCard.classList.add('card-pos-venda');
-                } else if (newStatus === 'Fechado') {
+                } else if (newStatus === 'Pronto / Lavagem') {
                     draggedCard.classList.add('card-fechado');
-                } else if (newStatus === 'Cancelado') {
+                } else if (newStatus === 'Entregue / Pago') {
                     draggedCard.classList.add('card-cancelado');
                 }
 

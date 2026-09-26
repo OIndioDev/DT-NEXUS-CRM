@@ -11,4 +11,6 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     // Busca contatos cujo nome ou empresa contenham o texto digitado (ignorando maiúsculas/minúsculas)
     List<Contact> findByNameContainingIgnoreCaseOrCompanyContainingIgnoreCase(String name, String company);
 
+    List<Contact> findByNameContainingIgnoreCase(String keyword);
+
 }

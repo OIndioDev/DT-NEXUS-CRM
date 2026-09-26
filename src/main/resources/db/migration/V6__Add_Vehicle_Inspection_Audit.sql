@@ -1,0 +1,6 @@
+ALTER TABLE contacts
+    ADD COLUMN IF NOT EXISTS inspection_external TEXT NULL,
+    ADD COLUMN IF NOT EXISTS inspection_internal VARCHAR(255) NULL,
+    ADD COLUMN IF NOT EXISTS fluid_status VARCHAR(255) NULL,
+    ADD COLUMN IF NOT EXISTS fuel_level VARCHAR(255) NULL,
+    ADD COLUMN IF NOT EXISTS signature_accepted BOOLEAN NULL;
